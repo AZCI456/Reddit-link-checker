@@ -5,6 +5,7 @@
   "scripts": {
     "build": "node inject-env.js"
   },
+  "type": "module",
   "dependencies": {
     "dotenv": "^16.0.0",
     "openai": "^4.0.0",

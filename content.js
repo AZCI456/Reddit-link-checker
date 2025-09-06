@@ -1,3 +1,6 @@
+import { runGSafeBrowsing } from "./api";
+//import { runOpenAIModeration } from "./runOpenAIModeration.js";
+
 /* EXTRACT ALL THE TEXT FROM WEB IN THE BACKGROUND */
 console.log('💥 CONTENT SCRIPT LOADED!');
 
@@ -83,23 +86,48 @@ chrome.runtime.sendMessage({
 
 
 
-// COMMENTED OUT API CALLS FOR NOW
-/*
-async function analyzeText(text){
-    try {
-    const [api1, api2, api3] = await Promise.all([
-      runGoogleLink(text),
-      run(text),
-      callApi3(text)
-    ]);
-    
-    return { api1, api2, api3 };
-  } catch (error) {
-    console.error('API call failed:', error);
-    return { api1: null, api2: null, api3: null };
-  }
+
+
+// Object to hold global flags and probability arrays for each moderation category
+const moderationCategories = {
+    discrimination: { flag: false, probabilities: [] },
+    nsfw: { flag: false, probabilities: [] },
+    violence: { flag: false, probabilities: [] },
+    hateSpeech: { flag: false, probabilities: [] },
+    aiSlop: { flag: false, probabilities: [] }
+};
+THRESHOLD = 0.2;
+
+// Analyze all paragraphs, unpack results, update flags and probability arrays
+async function analyzeAllParagraphs() {
+    for (let item of data) {
+        try {
+            const result = await runOpenAIModeration(item.text);
+            item.results = result;
+            // For each moderation category, update flag and store probability
+            for (const key of Object.keys(moderationCategories)) {
+                if (result[key]) {
+                    // Update flag if any item is flagged
+                    if (result[key] >= THRESHOLD) {
+                        moderationCategories[key].flag = true;
+                    }
+                    // Store probability value
+                    moderationCategories[key].probabilities.push(result[key].score);
+                }
+            }
+        } catch (error) {
+            console.error('Moderation API call failed for paragraph', item.id, error);
+            item.results = null;
+        }
+    }
+    // Log results
+    console.log('Moderation category flags and probabilities:', moderationCategories);
+    console.log('All moderation results:', data.map(({id, results}) => ({id, results})));
 }
 
+// Call this function after extracting paragraphs
+analyzeAllParagraphs();
+
 // Placeholder API functions (replace with real APIs later)
-*/
+
 

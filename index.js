@@ -1,3 +1,3 @@
-export { runOpenAIModeration } from "./openaiModeration.js";
-export { runPerspective } from "./perspective.js";
-export { runGSafeBrowsing } from "./safeBrowsing.js";
+export { runOpenAIModeration } from "./runOpenAIModeration.js";
+export { runPerspective } from "./runPerspective.js";
+export { runGSafeBrowsing } from "./runGSafeBrowsing.js";

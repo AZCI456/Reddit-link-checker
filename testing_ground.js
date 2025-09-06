@@ -1,10 +1,15 @@
-import { runOpenAIModeration, runPerspective, runGSafeBrowsing } from './api.js';
+import { runOpenAIModeration, runPerspective, runGSafeBrowsing } from './index.js';
 
 async function analyzeText(text){
   
     runOpenAIModeration(text);
+    console.log("1 done");
+    runPerspective(text);
+    console.log("2 done")
+
   
 }
+
 
 
 
