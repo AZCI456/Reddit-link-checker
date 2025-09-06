@@ -11,6 +11,12 @@
       "run_at": "document_idle"  
     }
   ],
+  "web_accessible_resources": [
+    {
+      "resources": ["png_files/mr_incredible_lol/*.png"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "background": {
     "service_worker": "background.js"
   },
