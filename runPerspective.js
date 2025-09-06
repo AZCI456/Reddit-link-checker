@@ -10,7 +10,7 @@ const THRESHOLD = 0.2;
 export async function runPerspective(text) {
     const body = {
         comment: { text },
-        languages: ["en"],
+        languages: ["en"], // en-us
         requestedAttributes: {
             TOXICITY: {},
             SEVERE_TOXICITY: {},
@@ -42,47 +42,53 @@ export async function runPerspective(text) {
 
     const scores = result.attributeScores;
     // Discrimination: hate, hate/threatening, harassment, harassment/threatening (map to IDENTITY_ATTACK, INSULT, SEVERE_TOXICITY, TOXICITY)
-    const discrimination = probabilityUnion([
+    const discrimination_pr = probabilityUnion([
         scores.IDENTITY_ATTACK?.summaryScore.value || 0,
         scores.INSULT?.summaryScore.value || 0,
         scores.SEVERE_TOXICITY?.summaryScore.value || 0,
         scores.TOXICITY?.summaryScore.value || 0
     ]);
     // NSFW: sexual, sexual/minors (map to SEXUALLY_EXPLICIT, OBSCENE, PROFANITY, FLIRTATION)
-    const nsfw = probabilityUnion([
+    const nsfw_pr = probabilityUnion([
         scores.SEXUALLY_EXPLICIT?.summaryScore.value || 0,
         scores.OBSCENE?.summaryScore.value || 0,
         scores.PROFANITY?.summaryScore.value || 0,
         scores.FLIRTATION?.summaryScore.value || 0
     ]);
     // Violence: violence, violence/graphic (map to THREAT, SEVERE_TOXICITY)
-    const violence = probabilityUnion([
+    const violence_pr = probabilityUnion([
         scores.THREAT?.summaryScore.value || 0,
         scores.SEVERE_TOXICITY?.summaryScore.value || 0
     ]);
     // Hate speech: hate, hate/threatening (map to TOXICITY, IDENTITY_ATTACK)
-    const hateSpeech = probabilityUnion([
+    const hateSpeech_pr = probabilityUnion([
         scores.TOXICITY?.summaryScore.value || 0,
         scores.IDENTITY_ATTACK?.summaryScore.value || 0
     ]);
     // AI Slop: not available, stub
-    const aiSlop = 0;
+    const aiSlop_pr = 0;
+
+    // calculated by the union between all the categories - higher is worse
+    const safetyScore_pr = probabilityUnion([discrimination_pr, nsfw_pr, violence_pr, hateSpeech_pr, aiSlop_pr]);
 
     const message = `Calculated Attribute Scores PERSPECTIVE API:
-    - Discrimination: ${discrimination}
-    - NSFW: ${nsfw}
-    - Violence: ${violence}
-    - Hate Speech: ${hateSpeech}
-    - AI Slop: ${aiSlop}`; 
+    - Discrimination: ${discrimination_pr}
+    - NSFW: ${nsfw_pr}
+    - Violence: ${violence_pr}
+    - Hate Speech: ${hateSpeech_pr}
+    - AI Slop: ${aiSlop_pr}
+    - safetyScore: ${safetyScore_pr}`; 
 
     console.log(message);
 
 
+
     return {
-        discrimination,
-        nsfw,
-        violence,
-        hateSpeech,
-        aiSlop
+        discrimination: discrimination_pr,
+        nsfw: nsfw_pr,
+        violence: violence_pr,
+        hateSpeech: hateSpeech_pr,
+        aiSlop: aiSlop_pr,
+        safetyScore: safetyScore_pr
     };
 }
