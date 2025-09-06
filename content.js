@@ -87,6 +87,7 @@ chrome.runtime.sendMessage({
 })
 
 
+//////////////////// API TEXT ANALYSIS //////////////////////////////
 
 
 
@@ -141,3 +142,52 @@ async function analyseAllParagraphs() {
 
 
 
+//////////////////// FRONT END FUNCITONALITY //////////////////////////////
+
+// TEXT SELECTION FUNCTIONALITY
+function showPopup(text, x, y) {
+    // remove existing popup first
+    const existingPopup = document.getElementById('prev_popup');
+    if (existingPopup){
+        existingPopup.remove();
+    }
+    let popup = document.createElement('div');  // create div element 
+    popup.id = 'prev_popup';
+    popup.innerHTML = `Selected: ${text}`;
+    popup.style.position = 'fixed';
+    popup.style.left = x + 'px';
+    popup.style.top = y + 'px';
+    popup.style.background = 'white'; 
+    popup.style.border = '2px solid black';
+    popup.style.padding = '10px';
+    popup.style.zIndex = '9999'; // Make sure it's on top
+    
+    document.body.appendChild(popup);
+}
+
+
+
+// add event listenter to wait for text to be highlighted
+document.addEventListener('mouseup', function(e) {  // 'mouseup' added as a safe-lock mechanism
+    let selectedText = window.getSelection().toString();
+    if (selectedText.length > 0){
+        // show popup
+        showPopup(selectedText, e.pageX, e.pageY);
+         
+    }
+});
+
+// Set a small delay to prevent the popup from being removed too soon
+document.addEventListener('mousedown', function (e) {
+    // Only remove if no text is currently selected
+    let selectedText = window.getSelection().toString();
+    if (selectedText.length === 0) {
+    // Check if click is NOT on the popup itself
+    if (!e.target.closest('#prev_popup')) {
+        const popup = document.getElementById('prev_popup');
+            popup.remove();
+    }
+};
+});
+
+let selsectionCoords = {x: 0, y: 0};
