@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 586px;
+            height: 248px;
+            font-family: "Share Tech Mono", monospace;
+            background: #828282;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .rectangle1 {
+            background-color: #828282;
+            height: 248px;
+            width: 586px;
+            filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.25));
+            border-radius: 10px;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+        }
+        .rectangle2 {
+            background-color: #11d187;
+            height: 236px;
+            width: 383px;
+            filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.25));
+            border-radius: 10px;
+            left: 196px;
+            top: 6px;
+            position: absolute;
+        }
+        .rectangle3, .rectangle4, .rectangle5, .rectangle6, .rectangle7 {
+            background-color: #000000;
+            height: 37px;
+            width: 211px;
+            filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.25));
+            border-radius: 10px;
+            position: absolute;
+        }
+        .rectangle3 { top: 19px; left: 362px; }
+        .rectangle4 { top: 62px; left: 362px; }
+        .rectangle5 { top: 106px; left: 362px; }
+        .rectangle6 { top: 149px; left: 362px; }
+        .rectangle7 { top: 192px; left: 362px; }
+        .rectangle8 {
+            background-color: #0eff4e;
+            height: 210px;
+            width: 145px;
+            border-radius: 10px;
+            top: 19px;
+            left: 207px;
+            position: absolute;
+        }
+        .rectangle9 {
+            background-color: #3d3d3d;
+            height: 210px;
+            width: 145px;
+            border-radius: 10px;
+            top: 19px;
+            left: 207px;
+            position: absolute;
+        }
+        .discrimination, .nsfw, .hatespeech, .violence, .aislop {
+            color: #ffffff;
+            text-align: left;
+            vertical-align: text-top;
+            font-size: 20px;
+            font-family: "Share Tech Mono", monospace;
+            position: absolute;
+            line-height: auto;
+            border-style: hidden;
+            outline: none;
+        }
+        .discrimination { left: 372px; top: 29px; width: 163px; height: 20px; }
+        .nsfw { left: 372px; top: 68px; width: 55px; height: 23px; }
+        .hatespeech { left: 372px; top: 117px; width: 130px; height: 20px; }
+        .violence { left: 372px; top: 159px; width: 98px; height: 20px; }
+        .aislop { left: 372px; top: 200px; width: 87px; height: 20px; }
+        .safetyscore {
+            color: #ffffff;
+            text-align: center;
+            vertical-align: text-top;
+            font-size: 20px;
+            font-family: "Share Tech Mono", monospace;
+            left: 199px;
+            top: 151px;
+            width: 157px;
+            height: 78px;
+            position: absolute;
+            line-height: auto;
+            border-style: hidden;
+            outline: none;
+        }
+        .image1 {
+            height: 178px;
+            width: 178px;
+            border-radius: 10px;
+            left: 8px;
+            top: 42px;
+            position: absolute;
+        }
+        .image1 img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .polygon1 {
+            background-color: #ece642;
+            height: 125px;
+            width: 132px;
+            filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.25));
+            top: 39px;
+            left: 212px;
+            position: absolute;
+        }
+        .line1 {
+            width: 28px;
+            transform: rotate(-90deg);
+            border: 5px solid #000000;
+            top: 76px;
+            left: 276px;
+            position: absolute;
+        }
+        .ellipse1 {
+            background-color: #000000;
+            height: 10px;
+            width: 9px;
+            top: 109px;
+            left: 274px;
+            position: absolute;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="rectangle1"></div>
+    <div class="rectangle2"></div>
+    <div class="rectangle3"></div>
+    <div class="rectangle4"></div>
+    <div class="rectangle5"></div>
+    <div class="rectangle6"></div>
+    <div class="rectangle7"></div>
+    <div class="rectangle8"></div>
+    <div class="rectangle9"></div>
+    <div class="discrimination">Discrimination:</div>
+    <div class="nsfw">NSFW:</div>
+    <div class="hatespeech">Hate Speech:</div>
+    <div class="violence">Violence:</div>
+    <div class="aislop">AI Slop:</div>
+    <div class="safetyscore">Safety Score</div>
+    <div class="image1">
+        <img src="png_files/mr_incredible_lol/phase_1.png" alt="Safety Analysis">
+    </div>
+    <div class="polygon1"></div>
+    <div class="line1"></div>
+    <div class="ellipse1"></div>
+</body>
+</html>
