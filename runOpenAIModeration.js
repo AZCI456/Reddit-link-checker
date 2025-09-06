@@ -11,17 +11,60 @@ const THRESHOLD = 0.2;
 export async function runOpenAIModeration(text) {
     const moderation = await openai.moderations.create({ input: text });
     const scores = moderation.results[0].category_scores;
-    for (const key in moderation.results[0].category_scores) {
-        if (moderation.results[0].category_scores[key] > THRESHOLD) {
-            let flagged = true;
-        }
+
+    const THRESHOLD = 0.2;
+
+    // Map into categories
+    const discriminationScores = [
+        scores.hate, scores["hate/threatening"],
+        scores.harassment, scores["harassment/threatening"]
+    ];
+    const nsfwScores = [scores.sexual, scores["sexual/minors"]];
+    const violenceScores = [scores.violence, scores["violence/graphic"]];
+    const hateSpeechScores = [scores.hate, scores["hate/threatening"]]; 
+    const aiSlopScores = []; // placeholder
+
+    function aggregateScore(arr) {
+        if (!arr.length) return 0;
+        // Probabilistic union (avoids double-counting when multiple are high)
+        // reduce function takes accumilator and multiples by the value - 1 
+        // should increase the value for a specific category
+        return 1 - arr.reduce((acc, x) => acc * (1 - x), 1);
     }
-    let hateSpeechParameters = [moderation.results[0].category_scores.hate, moderation.results[0].category_scores.harassment, moderation.results[0].category_scores["hate/threatening"], moderation.results[0].category_scores["harassment/threatening"]];
-    let hateScore = 1 - hateSpeechParameters.values().reduce((acc, x) => acc * (1 - x), 1);
-    let violenceParameters = [moderation.results[0].category_scores.violence, moderation.results[0].category_scores["violence/graphic"]];
-    let violenceScore = 1 - violenceParameters.values().reduce((acc, x) => acc * (1 - x), 1);
-    let sexuallyExplicitParameters =[moderation.results[0].category_scores.sexual, moderation.results[0].category_scores["sexual/minors"]];
-    let sexuallyExplicitScore = 1 - sexuallyExplicitParameters.values().reduce((acc, x) => acc * (1 - x), 1);
-    console.log(scores);
-    return scores;
+
+    const result = {
+        discrimination: {
+            score: aggregateScore(discriminationScores),
+            isDiscriminatory: aggregateScore(discriminationScores) > THRESHOLD
+        },
+        nsfw: {
+            score: aggregateScore(nsfwScores),
+            isNSFW: aggregateScore(nsfwScores) > THRESHOLD
+        },
+        violence: {
+            score: aggregateScore(violenceScores),
+            isViolent: aggregateScore(violenceScores) > THRESHOLD
+        },
+        hateSpeech: {
+            score: aggregateScore(hateSpeechScores),
+            isHateful: aggregateScore(hateSpeechScores) > THRESHOLD
+        },
+        aiSlop: {
+            score: 0, // stub
+            isAISlop: false
+        }
+    };
+
+    console.log(result);
+
+    // Safety score = 1 - (product of safety)
+    const safetyScore = 1 - [
+        result.discrimination.score,
+        result.nsfw.score,
+        result.violence.score,
+        result.hateSpeech.score,
+        result.aiSlop.score
+    ].reduce((acc, x) => acc * (1 - x), 1);
+
+    return { ...result, safetyScore };
 }
