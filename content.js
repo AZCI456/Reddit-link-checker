@@ -12,6 +12,12 @@ const data = paragraphs.map((text, idx) => ({
     results: {}  // stores API responses here 
 }))
 
+// Extract image alt text for NSFW image API
+const imageAlts = Array.from(document.querySelectorAll('img'))
+    .map(img => img.alt)
+    .filter(alt => alt && alt.trim().length > 0) // Only non-empty alt text
+
+
 /* CHECK IF PAGE CONTENT IS IN ENGLISH. IF NOT EXIT IN async */
 function isEnglishPage(){
     const htmlLang = document.documentElement.lang;
@@ -38,10 +44,12 @@ console.log('Page is in English, text extraction complete!');
 console.log(' Summary:', {
     totalParagraphs: paragraphs.length,
     totalDataItems: data.length,
+    totalImageAlts: imageAlts.length,
     sampleTexts: data.slice(0, 3).map(item => ({
         id: item.id,
         text: item.text.substring(0, 100) + '...'
-    }))
+    })),
+    sampleImageAlts: imageAlts.slice(0, 5) // Show first 5 alt texts
 });
 
 // COMMENTED OUT API CALLS FOR NOW
