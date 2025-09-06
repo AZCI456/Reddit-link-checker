@@ -98,12 +98,22 @@ const moderationCategories = {
     hateSpeech: false,
     aiSlop: false
 };
-THRESHOLD = 0.2;
-
-const safety_score_array = []
 
 // Analyze all paragraphs, unpack results, update flags and probability arrays
 async function analyseAllParagraphs() {
+
+    const moderationCategories = {
+        discrimination: false,
+        nsfw: false,
+        violence: false,
+        hateSpeech: false,
+        aiSlop: false
+        };
+
+    THRESHOLD = 0.2;
+
+    const safety_score_array = []
+
     for (let item of data) {
         try {
             const OAIresult = await runOpenAIModeration(item.text);
@@ -123,11 +133,11 @@ async function analyseAllParagraphs() {
             item.results = null;
         }
     }
-    return calculateMean(safety_score_array);
+    return calculateMean(safety_score_array), moderationCategories;
 }
 
 // Call this function after extracting paragraphs
-const finalSafetyScore = analyseAllParagraphs();
+//const finalSafetyScore = analyseAllParagraphs();
 
 
 
