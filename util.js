@@ -4,7 +4,7 @@ export function probabilityUnion(arr) {
     return 1 - arr.reduce((acc, x) => acc * (1 - x), 1);
 }
 
-function calculateMean(arr) {
+export function calculateMean(arr) {
   if (arr.length === 0) {
     return 0; // Or handle as an error, depending on requirements
   }

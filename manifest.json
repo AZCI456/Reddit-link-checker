@@ -11,9 +11,13 @@
       "run_at": "document_idle"  
     }
   ],
-  "web_accessible_resources": [
+   "web_accessible_resources": [
     {
-      "resources": ["png_files/mr_incredible_lol/*.png"],
+      "resources": [
+        "png_files/mr_incredible_lol/*.png",
+        "png_files/loading.gif",
+        "png_files/warning.png"
+      ],
       "matches": ["<all_urls>"]
     }
   ],
