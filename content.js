@@ -123,9 +123,7 @@ document.addEventListener('mousedown', function (e) {
     // Check if click is NOT on the popup itself
     if (!e.target.closest('#prev_popup')) {
         const popup = document.getElementById('prev_popup');
-        
             popup.remove();
-        
     }
 };
 });
