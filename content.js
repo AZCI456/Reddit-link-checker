@@ -3,7 +3,9 @@ const paragraphs = Array.from(document.querySelectorAll('p'))
 .map(p => p.innerText.trim())
 .filter(text => text.length > 10);
 
-console.log(paragraphs);
+console.log(`Found ${paragraphs.length} paragraphs on this page`);
+console.log('First few paragraphs:', paragraphs.slice(0, 3));
+console.log('All paragraphs:', paragraphs);
 
 const data = paragraphs.map((text, idx) => ({
     id: idx,
