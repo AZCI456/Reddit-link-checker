@@ -1,17 +1,162 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <style>
-    body {
-      width: 300px;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-    }
-  </style>
+    <meta charset="utf-8">
+      <!-- Google Fonts Import -->
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        body {
+            width: 300px;
+            min-height: 200px;
+            margin: 0;
+            padding: 20px;
+            font-family: "Share Tech Mono", monospace;
+            background: linear-gradient(135deg, #ffffff 0%, #696969 100%);
+            color: black;
+        }
+        .share-tech-mono-regular {
+          font-family: "Share Tech Mono", monospace;
+          font-weight: 400;
+          font-size: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .instructions {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.4);
+        }
+        
+        .instructions h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .instructions p {
+            margin: 0;
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        
+        .examples {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+        }
+        
+        .examples h4 {
+            margin: 0 0 8px 0;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .example-links {
+            font-size: 11px;
+            opacity: 0.8;
+            font-family: 'Monaco', 'Menlo', monospace;
+            line-height: 1.6;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .feature {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.4);
+        }
+        
+        .feature-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .feature-text {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .version {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
-  <h1>SafeLink</h1>
-  <p>Reading weird things so you don't have to...</p>
+    <div class="header">
+        <div class="logo"><img src="png_files/mr_incredible_lol/phase_1.png" alt="SafeLink Logo" style="width: 48px; height: 48px;"></div>
+        <h1>SafeLink</h1>
+        <div class="subtitle">Keeping you away from the dark side of the Internet.</div>
+    </div>
+    
+    <div class="instructions">
+        <h3>📝 How to Use</h3>
+        <p>Simply highlight any Reddit link or subreddit mention on any webpage to see its safety rating!</p>
+    </div>
+    
+    <div class="examples">
+        <h4>✨ Try selecting these:</h4>
+        <div class="example-links">
+            • r/AskReddit<br>
+            • r/mildlyinteresting<br>
+            • https://reddit.com/r/programming<br>
+            • Check out r/todayilearned!
+        </div>
+    </div>
+    
+    <div class="footer">
+        Made with SERA for safer browsing
+        <div class="version">v1.0</div>
+    </div>
 </body>
 </html>
