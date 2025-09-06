@@ -2,13 +2,35 @@
   "manifest_version": 3,
   "name": "SafeLink",
   "version": "0.0.1",
-  "description": "Allowing you to see the beauty of the internet without the fear of seeing something you don't want to.",
+  "description": "Keeping you away from the dark side of the Internet.",
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "permissions": [
     "storage",
     "activeTab",
     "scripting"
   ],
   "action": {
+    "default_icon": {
+      "16": "memes/phase_1.png",
+      "32": "memes/phase_1.png",
+      "48": "memes/phase_1.png",
+      "128": "memes/phase_1.png"
+    },
     "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "memes/phase_1.png",
+    "48": "memes/phase_1.png",
+    "128": "memes/phase_1.png"
   }
 }
