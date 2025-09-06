@@ -1,4 +1,4 @@
-import { runGSafeBrowsing } from "./api";
+import { runGSafeBrowsing, runPerspective } from "./api";
 //import { runOpenAIModeration } from "./runOpenAIModeration.js";
 
 /* EXTRACT ALL THE TEXT FROM WEB IN THE BACKGROUND */
@@ -90,31 +90,32 @@ chrome.runtime.sendMessage({
 
 // Object to hold global flags and probability arrays for each moderation category
 const moderationCategories = {
-    discrimination: { flag: false, probabilities: [] },
-    nsfw: { flag: false, probabilities: [] },
-    violence: { flag: false, probabilities: [] },
-    hateSpeech: { flag: false, probabilities: [] },
-    aiSlop: { flag: false, probabilities: [] }
+    discrimination: false,
+    nsfw: false,
+    violence: false,
+    hateSpeech: false,
+    aiSlop: false
 };
 THRESHOLD = 0.2;
 
+const safety_score_array = []
+
 // Analyze all paragraphs, unpack results, update flags and probability arrays
-async function analyzeAllParagraphs() {
+async function analyseAllParagraphs() {
     for (let item of data) {
         try {
-            const result = await runOpenAIModeration(item.text);
-            item.results = result;
+            const OAIresult = await runOpenAIModeration(item.text);
+            const PERPresult = await runPerspective(item.text)
+            //item.results = OAIresult;
             // For each moderation category, update flag and store probability
             for (const key of Object.keys(moderationCategories)) {
-                if (result[key]) {
-                    // Update flag if any item is flagged
-                    if (result[key] >= THRESHOLD) {
-                        moderationCategories[key].flag = true;
-                    }
-                    // Store probability value
-                    moderationCategories[key].probabilities.push(result[key].score);
+                if (OAIresult[key] >= THRESHOLD || PERPresult[key] >= THRESHOLD) {
+                    moderationCategories[key] = true;
                 }
             }
+            // add the final safety scores (to be averaged per paragraph)
+            safety_score_array.push(OAIresult[safetyScore])
+            safety_score_array.push(PERPresult[safetyScore])
         } catch (error) {
             console.error('Moderation API call failed for paragraph', item.id, error);
             item.results = null;
@@ -126,7 +127,7 @@ async function analyzeAllParagraphs() {
 }
 
 // Call this function after extracting paragraphs
-analyzeAllParagraphs();
+analyseAllParagraphs();
 
 // Placeholder API functions (replace with real APIs later)
 
