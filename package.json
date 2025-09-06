@@ -11,4 +11,6 @@
   "keywords": ["chrome-extension", "safety", "reddit"],
   "author": "Your Team",
   "license": "MIT"
+
+  "type": "module"
 }
