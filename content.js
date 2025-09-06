@@ -95,30 +95,31 @@ function showPopup(text, x, y) {
     popup.innerHTML = `
         <div style="
             background: #828282;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border-radius: 5px;
+            padding: 8px 8px 2px 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25));
             color: white;
             font-family: 'Share Tech Mono', monospace;
-            min-width: 300px;
-            max-width: 400px;
+            width: 293px;
+            min-width: 150px;
+            max-width: 90vw;
         ">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        
+            <div style="display: flex; justify-content: space-between; gap: 5px; align-items: flex-start">
                 <img src="${chrome.runtime.getURL('png_files/mr_incredible_lol/phase_1.png')}" 
-                     style="width: 40px; height: 40px; border-radius: 8px;">
-                <div>
-                    <div style="font-size: 18px; font-weight: bold;">Safety Analysis</div>
-                    <div style="font-size: 14px; opacity: 0.8;">Analyzing: ${text}</div>
+                     style="width: 72px; height: 95px; object-fit: cover; border-radius: 5px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25));top: 5px;">
+                <div style="background: #12D188; padding: 5px; border-radius: 5px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); display: flex; gap: 5px; align-items: flex-start;">
+                    <div style="background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 72px; height: 75px; display: flex; align-items: center; justify-content: center;">
+                        <div style="font-size: 8px; font-weight: bold;">Safety Score: 85%</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px; font-size: 7px;">
+                        <div style="background: rgba(0,0,0,0.4); padding: 4px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px;">Discrimination: Low</div>
+                        <div style="background: rgba(0,0,0,0.4); padding: 4px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px;">NSFW: None</div>
+                        <div style="background: rgba(0,0,0,0.4); padding: 4px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px;">Hate Speech: Low</div>
+                        <div style="background: rgba(0,0,0,0.4); padding: 4px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px;">Violence: None</div>
+                    </div>
                 </div>
-            </div>
-            <div style="background: #11d187; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
-                <div style="font-size: 16px; font-weight: bold;">Safety Score: 85%</div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 14px;">
-                <div style="background: #000; padding: 8px; border-radius: 6px; text-align: center;">Discrimination: Low</div>
-                <div style="background: #000; padding: 8px; border-radius: 6px; text-align: center;">NSFW: None</div>
-                <div style="background: #000; padding: 8px; border-radius: 6px; text-align: center;">Hate Speech: Low</div>
-                <div style="background: #000; padding: 8px; border-radius: 6px; text-align: center;">Violence: None</div>
             </div>
         </div>
     `;
