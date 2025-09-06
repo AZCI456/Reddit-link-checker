@@ -6,11 +6,12 @@
     "build": "node inject-env.js"
   },
   "dependencies": {
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.0",
+    "openai": "^4.0.0",
+    "node-fetch": "^3.3.0"
   },
   "keywords": ["chrome-extension", "safety", "reddit"],
   "author": "Your Team",
-  "license": "MIT"
-
+  "license": "MIT",
   "type": "module"
 }
