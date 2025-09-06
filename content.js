@@ -1,4 +1,6 @@
-import { runGSafeBrowsing, runPerspective } from "./api";
+import { runOpenAIModeration, runPerspective } from "./index.js";
+import { calculateMean } from "./util.js";
+
 //import { runOpenAIModeration } from "./runOpenAIModeration.js";
 
 /* EXTRACT ALL THE TEXT FROM WEB IN THE BACKGROUND */
@@ -121,14 +123,11 @@ async function analyseAllParagraphs() {
             item.results = null;
         }
     }
-    // Log results
-    console.log('Moderation category flags and probabilities:', moderationCategories);
-    console.log('All moderation results:', data.map(({id, results}) => ({id, results})));
+    return calculateMean(safety_score_array);
 }
 
 // Call this function after extracting paragraphs
-analyseAllParagraphs();
+const finalSafetyScore = analyseAllParagraphs();
 
-// Placeholder API functions (replace with real APIs later)
 
 
