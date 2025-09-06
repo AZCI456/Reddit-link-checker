@@ -13,7 +13,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["png_files/mr_incredible_lol/*.png"],
+      "resources": ["png_files/mr_incredible_lol/*.png", "png_files/loading.gif"],
       "matches": ["<all_urls>"]
     }
   ],

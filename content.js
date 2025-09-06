@@ -100,7 +100,8 @@ function showPopup(text, x, y) {
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25));
             color: white;
-            font-family: 'Share Tech Mono', monospace;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
             width: 293px;
             min-width: 150px;
             max-width: 90vw;
@@ -113,11 +114,11 @@ function showPopup(text, x, y) {
                     <div style="background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 72px; height: 75px; display: flex; align-items: center; justify-content: center;">
                         <div style="font-size: 8px; font-weight: bold;">Safety Score: 85%</div>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 4px; font-size: 7px;">
-                        <div style="background: rgba(0,0,0,0.4); padding: 4px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px;">Discrimination: Low</div>
-                        <div style="background: rgba(0,0,0,0.4); padding: 4px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px;">NSFW: None</div>
-                        <div style="background: rgba(0,0,0,0.4); padding: 4px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px;">Hate Speech: Low</div>
-                        <div style="background: rgba(0,0,0,0.4); padding: 4px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px;">Violence: None</div>
+                    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 7px;">
+                        <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">Discrimination: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
+                        <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">NSFW: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
+                        <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">Hate Speech: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
+                        <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">Violence: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
                     </div>
                 </div>
             </div>
