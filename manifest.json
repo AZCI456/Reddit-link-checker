@@ -1,25 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "RedFlag",
-  "version": "1.0.0",
-  "description": "Keeping you from the cursed side of the Internet.",
-  "action": {
-    "default_icon": {
-      "16": "memes/phase_1.png",
-      "32": "memes/phase_1.png",
-      "48": "memes/phase_1.png",
-      "128": "memes/phase_1.png"
-    },
-    "default_popup": "popup.html"
-  },
-  "icons": {
-    "16": "memes/phase_1.png",
-    "48": "memes/phase_1.png",
-    "128": "memes/phase_1.png"
-  },
+  "name": "SafeLink",
+  "version": "0.0.1",
+  "description": "Allowing you to see the beauty of the internet without the fear of seeing something you don't want to.",
   "permissions": [
-    
+    "storage",
     "activeTab",
     "scripting"
-  ]
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
 }
