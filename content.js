@@ -94,7 +94,7 @@ function showPopup(text, x, y) {
     popup.id = 'safety_popup';
     popup.innerHTML = `
         <div style="
-            background: #828282;
+            background: #bbbbbbff;
             border-radius: 5px;
             padding: 8px 8px 2px 8px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
@@ -111,7 +111,8 @@ function showPopup(text, x, y) {
                 <img src="${chrome.runtime.getURL('png_files/mr_incredible_lol/phase_1.png')}" 
                      style="width: 72px; height: 95px; object-fit: cover; border-radius: 5px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25));top: 5px;">
                 <div style="background: #12D188; padding: 5px; border-radius: 5px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); display: flex; gap: 5px; align-items: flex-start;">
-                    <div style="background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 72px; height: 75px; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 72px; height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <img src="${chrome.runtime.getURL('png_files/warning.png')}" style="width: 50px; height: 50px; margin-bottom: 5px;">
                         <div style="font-size: 8px; font-weight: bold;">Safety Score: 85%</div>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 6px; font-size: 7px;">
