@@ -82,24 +82,35 @@ chrome.runtime.sendMessage({
 })
 
 
-
-// COMMENTED OUT API CALLS FOR NOW
-/*
-async function analyzeText(text){
-    try {
-    const [api1, api2, api3] = await Promise.all([
-      runGoogleLink(text),
-      run(text),
-      callApi3(text)
-    ]);
+// TEXT SELECTION FUNCTIONALITY
+function showPopup(text, x, y) {
+    console.log('Creating popup at:', x, y); // Add this line
     
-    return { api1, api2, api3 };
-  } catch (error) {
-    console.error('API call failed:', error);
-    return { api1: null, api2: null, api3: null };
-  }
+    let popup = document.createElement('div');  // create div element 
+    popup.innerHTML = `Selected: ${text}`;
+    popup.style.position = 'fixed';
+    popup.style.left = x + 'px';
+    popup.style.top = y + 'px';
+    popup.style.background = 'white'; 
+    popup.style.border = '2px solid black';
+    popup.style.padding = '10px';
+    popup.style.zIndex = '9999'; // Make sure it's on top
+    
+    document.body.appendChild(popup);
+    console.log('Popup added to page');
 }
+// add event listenter to wait for text to be highlighted
+document.addEventListener('mouseup', function(e) {  // 'mouseup' added as a safe-lock mechanism
+    console.log("MOUSEUP EVENT FIRED !!");
+    let selectedText = window.getSelection().toString();
+    if (selectedText.length > 0){
+        console.log("TEXT SELECTED!");
+        // show popup
+        showPopup(selectedText, e.pageX, e.pageY);
+    } else {
+        console.log("NO  TEXT SELECTED!");
+    }
+});
 
-// Placeholder API functions (replace with real APIs later)
-*/
 
+let selsectionCoords = {x: 0, y: 0};
