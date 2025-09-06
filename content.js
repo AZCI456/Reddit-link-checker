@@ -41,7 +41,7 @@ if (!isEnglishPage()) {
 
 // Only run this if page IS in English
 console.log('Page is in English, text extraction complete!');
-console.log(' Summary:', {
+console.log('FOUND PARAGRAPHS:', {
     totalParagraphs: paragraphs.length,
     totalDataItems: data.length,
     totalImageAlts: imageAlts.length,
@@ -52,13 +52,44 @@ console.log(' Summary:', {
     sampleImageAlts: imageAlts.slice(0, 5) // Show first 5 alt texts
 });
 
+// Extract all LINKS on the page
+const linkUrls = Array.from(document.querySelectorAll('a'))
+    .map(link => link.href)
+    .filter(url => url && url.trim().length > 0);  // non-empty URLs
+
+// get current page URL
+const currentPageUrl = window.location.href;
+
+// COMBINE ALL URLs IN CURRENT PAGE TO CHECK
+const allUrls = [currentPageUrl, ...linkUrls];
+
+console.log('URLs to check for safety:', {
+    currentPage: currentPageUrl,
+    totalLinks: linkUrls.length,
+    allUrls: allUrls.slice(0,-1) 
+})
+
+// SEND ALL URLS TO 'background.js' for safe check
+chrome.runtime.sendMessage({
+    type: 'GOOGLE_SAFE_LINK',
+    urls: allUrls
+}, (response) => {
+    if (response && response.success){
+        console.log('URL safety check completed:', response.results);
+    } else {
+        console.error('URL safety check failed:', response);
+    }
+})
+
+
+
 // COMMENTED OUT API CALLS FOR NOW
 /*
 async function analyzeText(text){
     try {
     const [api1, api2, api3] = await Promise.all([
-      callApi1(text),
-      callApi2(text),
+      runGoogleLink(text),
+      run(text),
       callApi3(text)
     ]);
     
