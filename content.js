@@ -147,20 +147,48 @@ async function analyseAllParagraphs() {
 // TEXT SELECTION FUNCTIONALITY
 function showPopup(text, x, y) {
     // remove existing popup first
-    const existingPopup = document.getElementById('prev_popup');
+    const existingPopup = document.getElementById('safety_popup');
     if (existingPopup){
         existingPopup.remove();
     }
-    let popup = document.createElement('div');  // create div element 
-    popup.id = 'prev_popup';
-    popup.innerHTML = `Selected: ${text}`;
+    
+    let popup = document.createElement('div');
+    popup.id = 'safety_popup';
+    popup.innerHTML = `
+        <div style="
+            background: #828282;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            color: white;
+            font-family: 'Share Tech Mono', monospace;
+            min-width: 300px;
+            max-width: 400px;
+        ">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <img src="${chrome.runtime.getURL('png_files/mr_incredible_lol/phase_1.png')}" 
+                     style="width: 40px; height: 40px; border-radius: 8px;">
+                <div>
+                    <div style="font-size: 18px; font-weight: bold;">Safety Analysis</div>
+                    <div style="font-size: 14px; opacity: 0.8;">Analyzing: ${text}</div>
+                </div>
+            </div>
+            <div style="background: #11d187; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+                <div style="font-size: 16px; font-weight: bold;">Safety Score: 85%</div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 14px;">
+                <div style="background: #000; padding: 8px; border-radius: 6px; text-align: center;">Discrimination: Low</div>
+                <div style="background: #000; padding: 8px; border-radius: 6px; text-align: center;">NSFW: None</div>
+                <div style="background: #000; padding: 8px; border-radius: 6px; text-align: center;">Hate Speech: Low</div>
+                <div style="background: #000; padding: 8px; border-radius: 6px; text-align: center;">Violence: None</div>
+            </div>
+        </div>
+    `;
+    
     popup.style.position = 'fixed';
-    popup.style.left = x + 'px';
-    popup.style.top = y + 'px';
-    popup.style.background = 'white'; 
-    popup.style.border = '2px solid black';
-    popup.style.padding = '10px';
-    popup.style.zIndex = '9999'; // Make sure it's on top
+    popup.style.left = (x + 10) + 'px';
+    popup.style.top = (y - 60) + 'px';
+    popup.style.zIndex = '9999';
     
     document.body.appendChild(popup);
 }
@@ -168,26 +196,29 @@ function showPopup(text, x, y) {
 
 
 // add event listenter to wait for text to be highlighted
-document.addEventListener('mouseup', function(e) {  // 'mouseup' added as a safe-lock mechanism
+document.addEventListener('mouseup', function(e) {
+    // If the event target is inside the popup, do nothing
+    if (e.target.closest('#safety_popup')) {
+        return;
+    }
     let selectedText = window.getSelection().toString();
-    if (selectedText.length > 0){
+    if (selectedText.length > 0) {
         // show popup
         showPopup(selectedText, e.pageX, e.pageY);
-         
     }
 });
 
-// Set a small delay to prevent the popup from being removed too soon
-document.addEventListener('mousedown', function (e) {
-    // Only remove if no text is currently selected
-    let selectedText = window.getSelection().toString();
-    if (selectedText.length === 0) {
-    // Check if click is NOT on the popup itself
-    if (!e.target.closest('#prev_popup')) {
-        const popup = document.getElementById('prev_popup');
-            popup.remove();
+// Hide popup when clicking outside it, and clear selection
+document.addEventListener('click', function(e) {
+    const popup = document.getElementById('safety_popup');
+    // If clicking inside the popup, do nothing
+    if (e.target.closest('#safety_popup')) {
+        return;
     }
-};
+    if (popup) {
+        popup.remove();
+    }
+    window.getSelection().removeAllRanges(); // clear selection after hiding so no double clicking needed
 });
 
 let selsectionCoords = {x: 0, y: 0};
