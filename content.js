@@ -165,5 +165,3 @@ document.addEventListener('click', function(e) {
         }, 100);; // clear selection after hiding so no double clicking needed
     }
 });
-
-let selsectionCoords = {x: 0, y: 0};
