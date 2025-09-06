@@ -1,0 +1,22 @@
+{
+  "name": "reddit-link-checker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AZCI456/Reddit-link-checker.git"
+  },
+  "private": true,
+  "dependencies": {
+    "dotenv": "^17.2.2",
+    "fs": "^0.0.1-security",
+    "openai": "^5.19.1"
+  }
+}
