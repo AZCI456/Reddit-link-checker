@@ -8,7 +8,7 @@
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"],
-      "run_at": "document_idle"
+      "run_at": "document_idle"  
     }
   ],
   "background": {
@@ -21,16 +21,16 @@
   ],
   "action": {
     "default_icon": {
-      "16": "memes/phase_1.png",
-      "32": "memes/phase_1.png",
-      "48": "memes/phase_1.png",
-      "128": "memes/phase_1.png"
+      "16": "png_files/mr_incredible_lol/phase_1.png",
+      "32": "png_files/mr_incredible_lol/phase_1.png",
+      "48": "png_files/mr_incredible_lol/phase_1.png",
+      "128": "png_files/mr_incredible_lol/phase_1.png"
     },
     "default_popup": "popup.html"
   },
   "icons": {
-    "16": "memes/phase_1.png",
-    "48": "memes/phase_1.png",
-    "128": "memes/phase_1.png"
+    "16": "png_files/mr_incredible_lol/phase_1.png",
+    "48": "png_files/mr_incredible_lol/phase_1.png",
+    "128": "png_files/mr_incredible_lol/phase_1.png"
   }
 }
