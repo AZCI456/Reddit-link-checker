@@ -32,39 +32,36 @@ export async function runOpenAIModeration(text) {
         return 1 - arr.reduce((acc, x) => acc * (1 - x), 1);
     }
 
+    // result will contain the object as the key and the score as the value
     const result = {
-        discrimination: {
-            score: aggregateScore(discriminationScores),
-            isDiscriminatory: aggregateScore(discriminationScores) > THRESHOLD
-        },
-        nsfw: {
-            score: aggregateScore(nsfwScores),
-            isNSFW: aggregateScore(nsfwScores) > THRESHOLD
-        },
-        violence: {
-            score: aggregateScore(violenceScores),
-            isViolent: aggregateScore(violenceScores) > THRESHOLD
-        },
-        hateSpeech: {
-            score: aggregateScore(hateSpeechScores),
-            isHateful: aggregateScore(hateSpeechScores) > THRESHOLD
-        },
-        aiSlop: {
-            score: 0, // stub
-            isAISlop: false
-        }
+        discrimination: 
+            aggregateScore(discriminationScores)
+        ,
+        nsfw: 
+            aggregateScore(nsfwScores)
+        ,
+        violence: 
+            aggregateScore(violenceScores),
+        hateSpeech: 
+            aggregateScore(hateSpeechScores)
+        ,
+        aiSlop: 
+            0, // method stub val implement later
+        
     };
 
     console.log(result);
 
-    // Safety score = 1 - (product of safety)
+    // Safety score - probabilistic union of all the values: closer to 1 = worse
     const safetyScore = 1 - [
-        result.discrimination.score,
-        result.nsfw.score,
-        result.violence.score,
-        result.hateSpeech.score,
-        result.aiSlop.score
+        result.discrimination,
+        result.nsfw,
+        result.violence,
+        result.hateSpeech,
+        result.aiSlop
     ].reduce((acc, x) => acc * (1 - x), 1);
+
+    console.log(safetyScore);
 
     return { ...result, safetyScore };
 }
