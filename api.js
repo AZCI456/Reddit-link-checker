@@ -14,32 +14,34 @@ const PERSPECTIVE_API_KEY = process.env.PERSPECTIVE_API_KEY;
 const PERSPECTIVE_URL = `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${PERSPECTIVE_API_KEY}`;
 
 // OpenAI Moderation Function (copied from openAI.js)
-const threshold = 0.2;
-    const flagged = false;
-    const hateSpeechParameters = [];
-    const hateScore = 0;
-    const violenceParameters = [];
-    const violenceScore = 0;
-    const sexuallyExplicitParameters = [];
-    const sexuallyExplicitScore = 0;
+const THRESHOLD = 0.2;
+
+    // const flagged = false;
+    // const hateSpeechParameters = [];
+    // const hateScore = 0;
+    // const violenceParameters = [];
+    // const violenceScore = 0;
+    // const sexuallyExplicitParameters = [];
+    // const sexuallyExplicitScore = 0;
+
     
-export async function checkOpenAIModeration(text) {
+export async function runOpenAIModeration(text) {
 
 
-    const moderation = await openai.moderations.create({ input: question });
+    const moderation = await openai.moderations.create({ input: text });
 
     const scores = moderation.results[0].category_scores;
 
     for (const key in moderation.results[0].category_scores) {
         //console.log(key, moderation.results[0].category_scores[key]);
-        if (moderation.results[0].category_scores[key] > threshold) {
+        if (moderation.results[0].category_scores[key] > THRESHOLD) {
             let flagged = true;
         }
     }
 
+    // This is the product-based approach
     let hateSpeechParameters = [moderation.results[0].category_scores.hate, moderation.results[0].category_scores.harassment, moderation.results[0].category_scores["hate/threatening"], moderation.results[0].category_scores["harassment/threatening"]];
     let hateScore = 1 - hateSpeechParameters.values().reduce((acc, x) => acc * (1 - x), 1);
-    //This is the product-based approach
 
     let violenceParameters = [moderation.results[0].category_scores.violence, moderation.results[0].category_scores["violence/graphic"]];
     let violenceScore = 1 - violenceParameters.values().reduce((acc, x) => acc * (1 - x), 1);
@@ -53,7 +55,7 @@ export async function checkOpenAIModeration(text) {
 }
 
 // Perspective API Function (copied from perspective.js)
-export async function analyzeText(text) {
+export async function runPerspective(text) {
     const body = {
         comment: { text },
         languages: ["en"],
@@ -82,7 +84,7 @@ export async function analyzeText(text) {
     if (result && result.attributeScores) {
         let found = false;
         for (const [category, data] of Object.entries(result.attributeScores)) {
-            if (data.summaryScore && data.summaryScore.value > 0.0) {
+            if (data.summaryScore && data.summaryScore.value > THRESHOLD) {
                 console.log(`${category}: ${data.summaryScore.value}`);
                 found = true;
             }
@@ -96,7 +98,7 @@ export async function analyzeText(text) {
 }
 
 // Google Safe Browsing Function
-export async function checkUrlSafety(url) {
+export async function runGSafeBrowsing(url) {
     try {
         const SAFE_BROWSING_API_KEY = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
         const SAFE_BROWSING_API_URL = 'https://safebrowsing.googleapis.com/v4/threatMatches:find';
