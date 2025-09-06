@@ -141,8 +141,8 @@ document.addEventListener('mouseup', function(e) {
     }
     let selectedText = window.getSelection().toString();
     if (selectedText.length > 0) {
-        // show popup
-        showPopup(selectedText, e.pageX, e.pageY);
+        // show popup.  A tiny delay ensures the selection sticks
+        setTimeout(() => showPopup(selectedText, e.pageX, e.pageY), 10);
     }
 });
 
@@ -155,8 +155,12 @@ document.addEventListener('click', function(e) {
     }
     if (popup) {
         popup.remove();
+        // Delay clearing selection so popup logic runs first
+        // Delay clearing selection to avoid conflicts
+        setTimeout(() => {
+            window.getSelection().removeAllRanges();
+        }, 100);; // clear selection after hiding so no double clicking needed
     }
-    window.getSelection().removeAllRanges(); // clear selection after hiding so no double clicking needed
 });
 
 let selsectionCoords = {x: 0, y: 0};
