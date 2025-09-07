@@ -109,14 +109,10 @@ async function analyseAllParagraphs() {
             console.error('Moderation API call failed for paragraph', item.id, error);
         }
     }
-<<<<<<< HEAD
-    const meanSafetyScore = calculateMean(safety_score_array);
-=======
 
     const meanSafetyScore = window.calculateMean(safety_score_array);
     console.log('Final results:', { meanSafetyScore, moderationCategories });
     
->>>>>>> 2efa1f2 (Offically working yay)
     return [meanSafetyScore, moderationCategories];
 }
 
