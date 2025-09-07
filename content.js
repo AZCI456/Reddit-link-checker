@@ -156,6 +156,7 @@ if (!isEnglishPage()) {
 // Only run this if page IS in English
 console.log('Page is in English, text extraction complete!');
 console.log('FOUND PARAGRAPHS:', {
+console.log('FOUND PARAGRAPHS:', {
     totalParagraphs: paragraphs.length,
     totalDataItems: data.length,
     totalImageAlts: imageAlts.length,
@@ -252,17 +253,10 @@ async function analyseAllParagraphs(selectedText) {
         return null;
     }
 
-<<<<<<< HEAD
-    return calculateMean(safety_score_array), moderationCategories;
-
-    return window.calculateMean(safety_score_array), moderationCategories; // int, object -> needs destructuring
-
-=======
     const meanSafetyScore = window.calculateMean(safety_score_array);
     console.log('Final results:', { meanSafetyScore, moderationCategories });
     
     return [meanSafetyScore, moderationCategories];
->>>>>>> f8cb264 (Popup Officially working, image and background color changes etc.)
 }
 
 // Call this function after extracting paragraphs
@@ -326,10 +320,6 @@ function showPopup(text, x, y) {
     popup.style.top = (y - 60) + 'px';
     popup.style.zIndex = '9999';
     
-<<<<<<< HEAD
-    document.body.appendChild(popup);
-
-=======
     // Try multiple ways to append the popup
     try {
         if (document.body) {
@@ -346,7 +336,6 @@ function showPopup(text, x, y) {
         console.error('Error appending popup:', error);
         return;
     }
->>>>>>> f8cb264 (Popup Officially working, image and background color changes etc.)
 
     
     // Run analysis directly
@@ -409,9 +398,6 @@ function updatePopupWithResults(meanSafetyScore, moderationCategories) {
     if (mrIncredibleImg) {
         mrIncredibleImg.src = chrome.runtime.getURL(`png_files/mr_incredible_lol/${imageFile}`);
     }
-<<<<<<< HEAD
-
-=======
     
     // Update Safety Score percentage
     const safetyScoreDiv = popup.querySelector('div[style*="Safety Score"]');
@@ -420,7 +406,6 @@ function updatePopupWithResults(meanSafetyScore, moderationCategories) {
         safetyScoreDiv.innerHTML = `<div style="font-size: 8px; font-weight: bold;">Safety Score: ${percentage}%</div>`;
     }
     
->>>>>>> f8cb264 (Popup Officially working, image and background color changes etc.)
     // Replace loading GIFs with actual results
     const analysisDivs = popup.querySelectorAll('div[style*="background: rgba(0,0,0,0.4)"]');
     const categories = ['discrimination', 'nsfw', 'violence', 'hateSpeech'];
@@ -429,16 +414,6 @@ function updatePopupWithResults(meanSafetyScore, moderationCategories) {
         if (index < categories.length) {
             const category = categories[index];
             const isFlagged = moderationCategories[category];
-<<<<<<< HEAD
-
-            // Replace the loading GIF with the result
-            div.innerHTML = `<span style="color: white; font-size: 10px;">${isFlagged ? 'HIGH' : 'LOW'}</span>`;
-        }
-    });
-
-    console.log('Popup updated! Phase:', phase, 'Background:', backgroundColor, 'Image:', imageFile);
-
-=======
             
             // Find and replace only the loading GIF, keep the category text
             const loadingGif = div.querySelector('img[src*="loading.gif"]');
@@ -449,7 +424,6 @@ function updatePopupWithResults(meanSafetyScore, moderationCategories) {
     });
     
     console.log('Popup updated! Phase:', phase, 'Background:', backgroundColor, 'Image:', imageFile, 'Safety Score:', Math.round(meanSafetyScore * 100) + '%');
->>>>>>> f8cb264 (Popup Officially working, image and background color changes etc.)
 }
 
 
