@@ -2,113 +2,11 @@
 // runOpenAIModeration, runPerspective, and calculateMean should be available globally
 
 
-// TEXT SELECTION FUNCTIONALITY
-function showPopup(text, x, y) {
-    // remove existing popup first
-    const existingPopup = document.getElementById('safety_popup');
-    if (existingPopup){
-        existingPopup.remove();
-    }
-    
-    let popup = document.createElement('div');
-    popup.id = 'safety_popup';
-    popup.innerHTML = `
-        <div style="
-            background: #bbbbbbff;
-            border-radius: 5px;
-            padding: 8px 8px 2px 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25));
-            color: white;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            width: 293px;
-            min-width: 150px;
-            max-width: 90vw;
-        ">
-        
-            <div style="display: flex; justify-content: space-between; gap: 5px; align-items: flex-start">
-                <img src="${chrome.runtime.getURL('png_files/mr_incredible_lol/phase_1.png')}" 
-                     style="width: 72px; height: 95px; object-fit: cover; border-radius: 5px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25));top: 5px;">
-                <div style="background: #12D188; padding: 5px; border-radius: 5px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); display: flex; gap: 5px; align-items: flex-start;">
-                    <div style="background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 72px; height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                        <img src="${chrome.runtime.getURL('png_files/warning.png')}" style="width: 50px; height: 50px; margin-bottom: 5px;">
-                        <div style="font-size: 8px; font-weight: bold;">Safety Score: 85%</div>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 7px;">
-                        <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">Discrimination: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
-                        <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">NSFW: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
-                        <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">Hate Speech: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
-                        <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">Violence: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    popup.style.position = 'fixed';
-    popup.style.left = (x + 10) + 'px';
-    popup.style.top = (y - 60) + 'px';
-    popup.style.zIndex = '9999';
-    
-    document.body.appendChild(popup);
-}
-
-//Creating a function to check whether or not the selection is a url
-function isValidURL(text) {
-    try {
-        new URL(text);
-        return true;
-    } catch (_) {
-        return false;
-    }
-}
+// This function was moved to the correct location below
 
 
 
-// add event listenter to wait for text to be highlighted
-document.addEventListener('mouseup', function(e) {
-    // If the event target is inside the popup, do nothing
-
-    if (e.target.closest('#safety_popup')) {
-        return;
-    }
-    let selectedText = window.getSelection().toString().trim();
-
-    // check if the users selection is valid
-    if (selectedText.length > 0 && isValidURL(selectedText)) {
-        // show popup.  A tiny delay ensures the selection sticks
-        setTimeout(() => showPopup(selectedText, e.pageX, e.pageY), 10);
-        chrome.runtime.sendMessage({ action: "setURL", url: selectedText });
-        console.log(selectedText);
-    } else {
-        //show popup here
-        return;
-    }
-});
-
-
-// Later, you can retrieve it
-//chrome.runtime.sendMessage({ action: "getURL" }, (response) => {
-    //console.log("Global URL:", response.url);
-//});
-
-// Hide popup when clicking outside it, and clear selection
-document.addEventListener('click', function(e) {
-    const popup = document.getElementById('safety_popup');
-    // If clicking inside the popup, do nothing
-    if (e.target.closest('#safety_popup')) {
-        return;
-    }
-    if (popup) {
-        popup.remove();
-        // Delay clearing selection so popup logic runs first
-        // Delay clearing selection to avoid conflicts
-        setTimeout(() => {
-            window.getSelection().removeAllRanges();
-        }, 100);; // clear selection after hiding so no double clicking needed
-    }
-});
+// This event listener was moved to the correct location below
 
 
 
@@ -262,7 +160,7 @@ function showPopup(text, x, y) {
                 <div style="background: #12D188; padding: 5px; border-radius: 5px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); display: flex; gap: 5px; align-items: flex-start;">
                     <div style="background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 72px; height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                         <img src="${chrome.runtime.getURL('png_files/warning.png')}" style="width: 50px; height: 50px; margin-bottom: 5px;">
-                        <div style="font-size: 8px; font-weight: bold;">Safety Score: 85%</div>
+                        <div class="safety-score-display" style="font-size: 8px; font-weight: bold;">Safety Score: </div>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 6px; font-size: 7px;">
                         <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">Discrimination: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
@@ -292,7 +190,7 @@ function showPopup(text, x, y) {
             console.error('No valid container found for popup');
             return;
         }
-    } catch (error) {
+  } catch (error) {
         console.error('Error appending popup:', error);
         return;
     }
@@ -360,10 +258,13 @@ function updatePopupWithResults(meanSafetyScore, moderationCategories) {
     }
     
     // Update Safety Score percentage
-    const safetyScoreDiv = popup.querySelector('div[style*="Safety Score"]');
+    const safetyScoreDiv = popup.querySelector('.safety-score-display');
     if (safetyScoreDiv) {
         const percentage = Math.round(meanSafetyScore * 100);
-        safetyScoreDiv.innerHTML = `<div style="font-size: 8px; font-weight: bold;">Safety Score: ${percentage}%</div>`;
+        console.log('Updating Safety Score to:', percentage + '%');
+        safetyScoreDiv.textContent = `Safety Score: ${percentage}%`;
+    } else {
+        console.log('Safety Score div not found!');
     }
     
     // Replace loading GIFs with actual results
