@@ -92,6 +92,9 @@ document.addEventListener('mouseup', function(e) {
         // show popup.  A tiny delay ensures the selection sticks
         setTimeout(() => showPopup(selectedText, e.pageX, e.pageY), 10);
         chrome.runtime.sendMessage({ action: "setURL", url: selectedText });
+    } else {
+        //show popup here
+        return;
     }
 });
 
