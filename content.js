@@ -70,16 +70,28 @@ console.log('FOUND PARAGRAPHS:', {
 
 //////////////////// API TEXT ANALYSIS //////////////////////////////
 
+// Flag to prevent multiple simultaneous API calls
+let isAnalyzing = false;
 
 
 
-// Analyze all paragraphs, unpack results, update flags and probability arrays
-async function analyseAllParagraphs() {
+
+// Analyze selected text, unpack results, update flags and probability arrays
+async function analyseAllParagraphs(selectedText) {
+    // Prevent multiple simultaneous calls
+    if (isAnalyzing) {
+        console.log('Analysis already in progress, skipping...');
+        return null;
+    }
+    
     // Wait for modules to load
-    if (!runOpenAIModeration || !runPerspective || !calculateMean) {
+    if (!window.runOpenAIModeration || !window.runPerspective || !window.calculateMean) {
         console.error('Modules not loaded yet');
         return null;
     }
+
+    isAnalyzing = true;
+    console.log('Starting analysis...');
 
     const moderationCategories = {
         discrimination: false,
@@ -92,27 +104,35 @@ async function analyseAllParagraphs() {
     const THRESHOLD = 0.2;
     const safety_score_array = [];
 
-    for (let item of data) {
-        try {
-            const OAIresult = await runOpenAIModeration(item.text);
-            const PERPresult = await runPerspective(item.text);
-            // For each moderation category, update flag and store probability
-            for (const key of Object.keys(moderationCategories)) {
-                if (OAIresult[key] >= THRESHOLD || PERPresult[key] >= THRESHOLD) {
-                    moderationCategories[key] = true;
-                }
+    try {
+        console.log('Analyzing text:', selectedText);
+        const OAIresult = await window.runOpenAIModeration(selectedText);
+        const PERPresult = await window.runPerspective(selectedText);
+        
+        console.log('OpenAI result:', OAIresult);
+        console.log('Perspective result:', PERPresult);
+        
+        // For each moderation category, update flag and store probability
+        for (const key of Object.keys(moderationCategories)) {
+            if (OAIresult[key] >= THRESHOLD || PERPresult[key] >= THRESHOLD) {
+                moderationCategories[key] = true;
             }
-            // add the final safety scores (to be averaged per paragraph)
-            safety_score_array.push(OAIresult.safetyScore || 0);
-            safety_score_array.push(PERPresult.safetyScore || 0);
-        } catch (error) {
-            console.error('Moderation API call failed for paragraph', item.id, error);
         }
+        
+        // add the final safety scores (to be averaged)
+        safety_score_array.push(OAIresult.safetyScore || 0);
+        safety_score_array.push(PERPresult.safetyScore || 0);
+        
+    } catch (error) {
+        console.error('Moderation API call failed:', error);
+        isAnalyzing = false;
+        return null;
     }
 
     const meanSafetyScore = window.calculateMean(safety_score_array);
     console.log('Final results:', { meanSafetyScore, moderationCategories });
     
+    isAnalyzing = false;
     return [meanSafetyScore, moderationCategories];
 }
 

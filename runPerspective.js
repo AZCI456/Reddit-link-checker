@@ -18,8 +18,22 @@ function probabilityUnion(probabilities) {
     return 1 - product;
 }
 
+// Rate limiting: track last call time
+let lastCallTime = 0;
+const MIN_DELAY = 1000; // 1 second between calls
+
 // Make function globally available
 window.runPerspective = async function runPerspective(text) {
+    // Rate limiting: ensure minimum delay between calls
+    const now = Date.now();
+    const timeSinceLastCall = now - lastCallTime;
+    if (timeSinceLastCall < MIN_DELAY) {
+        const delay = MIN_DELAY - timeSinceLastCall;
+        console.log(`Rate limiting: waiting ${delay}ms before next Perspective API call`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+    }
+    lastCallTime = Date.now();
+    
     const body = {
         comment: { text },
         languages: ["en"], // en-us
