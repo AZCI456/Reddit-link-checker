@@ -46,6 +46,3 @@ Things we would’ve done if we were more tech savvy and not first years:
 3. Manual link upload for the html 
 4. AI slop - as mentioned above 
 5. Working product 😢
-
-here's the video link if you're interested to see a demo:
-https://www.youtube.com/watch?v=gnwSY_OwvwY
