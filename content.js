@@ -209,14 +209,9 @@ const moderationCategories = {
     aiSlop: false
 };
 
-// Analyze all paragraphs, unpack results, update flags and probability arrays
-async function analyseAllParagraphs() {
+// Analyze selected text, unpack results, update flags and probability arrays
+async function analyseAllParagraphs(selectedText) {
     // Wait for modules to load
-    console.log('Checking function availability:');
-    console.log('window.runOpenAIModeration:', typeof window.runOpenAIModeration);
-    console.log('window.runPerspective:', typeof window.runPerspective);
-    console.log('window.calculateMean:', typeof window.calculateMean);
-    
     if (!window.runOpenAIModeration || !window.runPerspective || !window.calculateMean) {
         console.error('Modules not loaded yet');
         return null;
@@ -228,35 +223,46 @@ async function analyseAllParagraphs() {
         violence: false,
         hateSpeech: false,
         aiSlop: false
-        };
+    };
 
     const THRESHOLD = 0.2;
+    const safety_score_array = [];
 
-    const safety_score_array = []
-
-    for (let item of data) {
-        try {
-            const OAIresult = await window.runOpenAIModeration(item.text);
-            const PERPresult = await window.runPerspective(item.text)
-            // For each moderation category, update flag and store probability
-            for (const key of Object.keys(moderationCategories)) {
-                if (OAIresult[key] >= THRESHOLD || PERPresult[key] >= THRESHOLD) {
-                    moderationCategories[key] = true;
-                }
+    try {
+        console.log('Analyzing text:', selectedText);
+        const OAIresult = await window.runOpenAIModeration(selectedText);
+        const PERPresult = await window.runPerspective(selectedText);
+        
+        console.log('OpenAI result:', OAIresult);
+        console.log('Perspective result:', PERPresult);
+        
+        // For each moderation category, update flag and store probability
+        for (const key of Object.keys(moderationCategories)) {
+            if (OAIresult[key] >= THRESHOLD || PERPresult[key] >= THRESHOLD) {
+                moderationCategories[key] = true;
             }
-            // add the final safety scores (to be averaged per paragraph)
-            safety_score_array.push(OAIresult.safetyScore || 0)
-            safety_score_array.push(PERPresult.safetyScore || 0)
-        } catch (error) {
-            console.error('Moderation API call failed for paragraph', item.id, error);
-            item.results = null;
         }
+        
+        // add the final safety scores (to be averaged)
+        safety_score_array.push(OAIresult.safetyScore || 0);
+        safety_score_array.push(PERPresult.safetyScore || 0);
+        
+    } catch (error) {
+        console.error('Moderation API call failed:', error);
+        return null;
     }
 
+<<<<<<< HEAD
     return calculateMean(safety_score_array), moderationCategories;
 
     return window.calculateMean(safety_score_array), moderationCategories; // int, object -> needs destructuring
 
+=======
+    const meanSafetyScore = window.calculateMean(safety_score_array);
+    console.log('Final results:', { meanSafetyScore, moderationCategories });
+    
+    return [meanSafetyScore, moderationCategories];
+>>>>>>> f8cb264 (Popup Officially working, image and background color changes etc.)
 }
 
 // Call this function after extracting paragraphs
@@ -269,6 +275,10 @@ async function analyseAllParagraphs() {
 
 // TEXT SELECTION FUNCTIONALITY
 function showPopup(text, x, y) {
+    console.log('showPopup called with:', { text: text.substring(0, 50), x, y });
+    console.log('document.body exists:', !!document.body);
+    console.log('document.readyState:', document.readyState);
+    
     // remove existing popup first
     const existingPopup = document.getElementById('safety_popup');
     if (existingPopup){
@@ -316,13 +326,32 @@ function showPopup(text, x, y) {
     popup.style.top = (y - 60) + 'px';
     popup.style.zIndex = '9999';
     
+<<<<<<< HEAD
     document.body.appendChild(popup);
 
+=======
+    // Try multiple ways to append the popup
+    try {
+        if (document.body) {
+            document.body.appendChild(popup);
+            console.log('Popup appended to document.body successfully');
+        } else if (document.documentElement) {
+            document.documentElement.appendChild(popup);
+            console.log('Popup appended to document.documentElement successfully');
+        } else {
+            console.error('No valid container found for popup');
+            return;
+        }
+    } catch (error) {
+        console.error('Error appending popup:', error);
+        return;
+    }
+>>>>>>> f8cb264 (Popup Officially working, image and background color changes etc.)
 
     
     // Run analysis directly
     console.log('Running analysis for text:', text);
-    analyseAllParagraphs().then((result) => {
+    analyseAllParagraphs(text).then((result) => {
         if (result) {
             const [meanSafetyScore, moderationCategories] = result;
             console.log('Analysis complete! Mean score:', meanSafetyScore);
@@ -361,11 +390,11 @@ function updatePopupWithResults(meanSafetyScore, moderationCategories) {
         imageFile = 'phase_1.png';
     } else if (phase === 3) {
         // Phase 3: Yellow (warning)
-        backgroundColor = '#FFD700';
+        backgroundColor = '#D1BE12';
         imageFile = 'phase_2.png';
     } else {
         // Phase 4-5: Red (danger)
-        backgroundColor = '#FF4444';
+        backgroundColor = '#BE4C4C';
         imageFile = 'phase_3.png';
     }
 
@@ -380,7 +409,18 @@ function updatePopupWithResults(meanSafetyScore, moderationCategories) {
     if (mrIncredibleImg) {
         mrIncredibleImg.src = chrome.runtime.getURL(`png_files/mr_incredible_lol/${imageFile}`);
     }
+<<<<<<< HEAD
 
+=======
+    
+    // Update Safety Score percentage
+    const safetyScoreDiv = popup.querySelector('div[style*="Safety Score"]');
+    if (safetyScoreDiv) {
+        const percentage = Math.round(meanSafetyScore * 100);
+        safetyScoreDiv.innerHTML = `<div style="font-size: 8px; font-weight: bold;">Safety Score: ${percentage}%</div>`;
+    }
+    
+>>>>>>> f8cb264 (Popup Officially working, image and background color changes etc.)
     // Replace loading GIFs with actual results
     const analysisDivs = popup.querySelectorAll('div[style*="background: rgba(0,0,0,0.4)"]');
     const categories = ['discrimination', 'nsfw', 'violence', 'hateSpeech'];
@@ -389,6 +429,7 @@ function updatePopupWithResults(meanSafetyScore, moderationCategories) {
         if (index < categories.length) {
             const category = categories[index];
             const isFlagged = moderationCategories[category];
+<<<<<<< HEAD
 
             // Replace the loading GIF with the result
             div.innerHTML = `<span style="color: white; font-size: 10px;">${isFlagged ? 'HIGH' : 'LOW'}</span>`;
@@ -397,6 +438,18 @@ function updatePopupWithResults(meanSafetyScore, moderationCategories) {
 
     console.log('Popup updated! Phase:', phase, 'Background:', backgroundColor, 'Image:', imageFile);
 
+=======
+            
+            // Find and replace only the loading GIF, keep the category text
+            const loadingGif = div.querySelector('img[src*="loading.gif"]');
+            if (loadingGif) {
+                loadingGif.outerHTML = `<span style="color: white; font-size: 8px; margin-left: 2px;">${isFlagged ? '✅' : '❌'}</span>`;
+            }
+        }
+    });
+    
+    console.log('Popup updated! Phase:', phase, 'Background:', backgroundColor, 'Image:', imageFile, 'Safety Score:', Math.round(meanSafetyScore * 100) + '%');
+>>>>>>> f8cb264 (Popup Officially working, image and background color changes etc.)
 }
 
 
@@ -409,8 +462,19 @@ document.addEventListener('mouseup', function(e) {
     }
     let selectedText = window.getSelection().toString();
     if (selectedText.length > 0) {
-        // show popup.  A tiny delay ensures the selection sticks
-        setTimeout(() => showPopup(selectedText, e.pageX, e.pageY), 10);
+        console.log('Text selected, showing popup...');
+        // show popup.  A delay ensures the selection sticks and DOM is ready
+        setTimeout(() => {
+            if (document.body && document.readyState === 'complete') {
+                console.log('DOM ready, calling showPopup');
+                showPopup(selectedText, e.pageX, e.pageY);
+            } else {
+                console.log('DOM not ready, waiting...');
+                setTimeout(() => showPopup(selectedText, e.pageX, e.pageY), 100);
+            }
+        }, 50);
+    } else {
+        console.log('No text selected');
     }
 });
 
