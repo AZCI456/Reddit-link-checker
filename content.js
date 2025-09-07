@@ -211,7 +211,14 @@ async function analyseAllParagraphs() {
             console.error('Moderation API call failed for paragraph', item.id, error);
         }
     }
+<<<<<<< HEAD
     const meanSafetyScore = calculateMean(safety_score_array);
+=======
+
+    const meanSafetyScore = window.calculateMean(safety_score_array);
+    console.log('Final results:', { meanSafetyScore, moderationCategories });
+    
+>>>>>>> 2efa1f2 (Offically working yay)
     return [meanSafetyScore, moderationCategories];
 }
 
@@ -378,6 +385,18 @@ function updatePopupWithResults(meanSafetyScore, moderationCategories) {
     
     console.log('Popup updated! Phase:', phase, 'Background:', backgroundColor, 'Image:', imageFile, 'Safety Score:', Math.round(meanSafetyScore * 100) + '%');
 }
+
+
+//Creating a function to check whether or not the selection is a url
+function isValidURL(text) {
+    try {
+        new URL(text);
+        return true;
+    } catch (_) {
+        return false;
+    }
+}
+
 
 
 
