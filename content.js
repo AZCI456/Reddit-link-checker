@@ -2,6 +2,115 @@
 // runOpenAIModeration, runPerspective, and calculateMean should be available globally
 
 
+// TEXT SELECTION FUNCTIONALITY
+function showPopup(text, x, y) {
+    // remove existing popup first
+    const existingPopup = document.getElementById('safety_popup');
+    if (existingPopup){
+        existingPopup.remove();
+    }
+    
+    let popup = document.createElement('div');
+    popup.id = 'safety_popup';
+    popup.innerHTML = `
+        <div style="
+            background: #bbbbbbff;
+            border-radius: 5px;
+            padding: 8px 8px 2px 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25));
+            color: white;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            width: 293px;
+            min-width: 150px;
+            max-width: 90vw;
+        ">
+        
+            <div style="display: flex; justify-content: space-between; gap: 5px; align-items: flex-start">
+                <img src="${chrome.runtime.getURL('png_files/mr_incredible_lol/phase_1.png')}" 
+                     style="width: 72px; height: 95px; object-fit: cover; border-radius: 5px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25));top: 5px;">
+                <div style="background: #12D188; padding: 5px; border-radius: 5px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); display: flex; gap: 5px; align-items: flex-start;">
+                    <div style="background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 72px; height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <img src="${chrome.runtime.getURL('png_files/warning.png')}" style="width: 50px; height: 50px; margin-bottom: 5px;">
+                        <div style="font-size: 8px; font-weight: bold;">Safety Score: 85%</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 7px;">
+                        <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">Discrimination: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
+                        <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">NSFW: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
+                        <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">Hate Speech: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
+                        <div style="background: rgba(0,0,0,0.4); padding: 2px 4px; border-radius: 4px; text-align: center; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.25)); width: 105px; height: 12px; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px;">Violence: <img src="${chrome.runtime.getURL('png_files/loading.gif')}" style="width: 8px; height: 8px; margin-left: 2px; margin-top: 2px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    popup.style.position = 'fixed';
+    popup.style.left = (x + 10) + 'px';
+    popup.style.top = (y - 60) + 'px';
+    popup.style.zIndex = '9999';
+    
+    document.body.appendChild(popup);
+}
+
+//Creating a function to check whether or not the selection is a url
+function isValidURL(text) {
+    try {
+        new URL(text);
+        return true;
+    } catch (_) {
+        return false;
+    }
+}
+
+
+
+// add event listenter to wait for text to be highlighted
+document.addEventListener('mouseup', function(e) {
+    // If the event target is inside the popup, do nothing
+
+    if (e.target.closest('#safety_popup')) {
+        return;
+    }
+    let selectedText = window.getSelection().toString().trim();
+
+    // check if the users selection is valid
+    if (selectedText.length > 0 && isValidURL(selectedText)) {
+        // show popup.  A tiny delay ensures the selection sticks
+        setTimeout(() => showPopup(selectedText, e.pageX, e.pageY), 10);
+        chrome.runtime.sendMessage({ action: "setURL", url: selectedText });
+        console.log(selectedText);
+    } else {
+        //show popup here
+        return;
+    }
+});
+
+
+// Later, you can retrieve it
+//chrome.runtime.sendMessage({ action: "getURL" }, (response) => {
+    //console.log("Global URL:", response.url);
+//});
+
+// Hide popup when clicking outside it, and clear selection
+document.addEventListener('click', function(e) {
+    const popup = document.getElementById('safety_popup');
+    // If clicking inside the popup, do nothing
+    if (e.target.closest('#safety_popup')) {
+        return;
+    }
+    if (popup) {
+        popup.remove();
+        // Delay clearing selection so popup logic runs first
+        // Delay clearing selection to avoid conflicts
+        setTimeout(() => {
+            window.getSelection().removeAllRanges();
+        }, 100);; // clear selection after hiding so no double clicking needed
+    }
+});
+
+
 
 /* EXTRACT ALL THE TEXT FROM WEB IN THE BACKGROUND */
 console.log('💥 CONTENT SCRIPT LOADED!');
@@ -143,11 +252,11 @@ async function analyseAllParagraphs() {
             item.results = null;
         }
     }
-<<<<<<< HEAD
+
     return calculateMean(safety_score_array), moderationCategories;
-=======
+
     return window.calculateMean(safety_score_array), moderationCategories; // int, object -> needs destructuring
->>>>>>> ba008b9 (got all api functions working, remove node.js implementation, moved all API keys into scripts and out of dotenv)
+
 }
 
 // Call this function after extracting paragraphs
@@ -156,6 +265,7 @@ async function analyseAllParagraphs() {
 
 
 //////////////////// FRONT END FUNCITONALITY //////////////////////////////
+
 
 // TEXT SELECTION FUNCTIONALITY
 function showPopup(text, x, y) {
@@ -207,8 +317,8 @@ function showPopup(text, x, y) {
     popup.style.zIndex = '9999';
     
     document.body.appendChild(popup);
-<<<<<<< HEAD
-=======
+
+
     
     // Run analysis directly
     console.log('Running analysis for text:', text);
@@ -232,9 +342,9 @@ function showPopup(text, x, y) {
 function updatePopupWithResults(meanSafetyScore, moderationCategories) {
     const popup = document.getElementById('safety_popup');
     if (!popup) return;
-    
+
     console.log('Updating popup with results:', { meanSafetyScore, moderationCategories });
-    
+
     // Calculate phase (1-5) based on safety score
     let phase;
     if (meanSafetyScore <= 0.2) phase = 1;
@@ -242,7 +352,7 @@ function updatePopupWithResults(meanSafetyScore, moderationCategories) {
     else if (meanSafetyScore <= 0.6) phase = 3;
     else if (meanSafetyScore <= 0.8) phase = 4;
     else phase = 5;
-    
+
     // Determine colors and image based on phase
     let backgroundColor, imageFile;
     if (phase <= 2) {
@@ -258,35 +368,35 @@ function updatePopupWithResults(meanSafetyScore, moderationCategories) {
         backgroundColor = '#FF4444';
         imageFile = 'phase_3.png';
     }
-    
+
     // Update the main popup background
     const mainContainer = popup.querySelector('div');
     if (mainContainer) {
         mainContainer.style.background = backgroundColor;
     }
-    
+
     // Update the Mr. Incredible image
     const mrIncredibleImg = popup.querySelector('img[src*="mr_incredible_lol"]');
     if (mrIncredibleImg) {
         mrIncredibleImg.src = chrome.runtime.getURL(`png_files/mr_incredible_lol/${imageFile}`);
     }
-    
+
     // Replace loading GIFs with actual results
     const analysisDivs = popup.querySelectorAll('div[style*="background: rgba(0,0,0,0.4)"]');
     const categories = ['discrimination', 'nsfw', 'violence', 'hateSpeech'];
-    
+
     analysisDivs.forEach((div, index) => {
         if (index < categories.length) {
             const category = categories[index];
             const isFlagged = moderationCategories[category];
-            
+
             // Replace the loading GIF with the result
             div.innerHTML = `<span style="color: white; font-size: 10px;">${isFlagged ? 'HIGH' : 'LOW'}</span>`;
         }
     });
-    
+
     console.log('Popup updated! Phase:', phase, 'Background:', backgroundColor, 'Image:', imageFile);
->>>>>>> ba008b9 (got all api functions working, remove node.js implementation, moved all API keys into scripts and out of dotenv)
+
 }
 
 
@@ -320,3 +430,4 @@ document.addEventListener('click', function(e) {
         }, 100);; // clear selection after hiding so no double clicking needed
     }
 });
+
