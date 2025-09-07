@@ -88,6 +88,7 @@ document.addEventListener('mouseup', function(e) {
     }
     let selectedText = window.getSelection().toString().trim();
 
+    // check if the users selection is valid
     if (selectedText.length > 0 && isValidURL(selectedText)) {
         // show popup.  A tiny delay ensures the selection sticks
         setTimeout(() => showPopup(selectedText, e.pageX, e.pageY), 10);
