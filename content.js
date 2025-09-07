@@ -132,6 +132,8 @@ const imageAlts = Array.from(document.querySelectorAll('img'))
     .filter(alt => alt && alt.trim().length > 0) // Only non-empty alt text
 
 
+/////////////// Language check /////////////////
+
 /* CHECK IF PAGE CONTENT IS IN ENGLISH. IF NOT EXIT IN async */
 function isEnglishPage(){
     const htmlLang = document.documentElement.lang;
@@ -156,7 +158,6 @@ if (!isEnglishPage()) {
 // Only run this if page IS in English
 console.log('Page is in English, text extraction complete!');
 console.log('FOUND PARAGRAPHS:', {
-console.log('FOUND PARAGRAPHS:', {
     totalParagraphs: paragraphs.length,
     totalDataItems: data.length,
     totalImageAlts: imageAlts.length,
@@ -167,53 +168,17 @@ console.log('FOUND PARAGRAPHS:', {
     sampleImageAlts: imageAlts.slice(0, 5) // Show first 5 alt texts
 });
 
-// // Extract all LINKS on the page
-// const linkUrls = Array.from(document.querySelectorAll('a'))
-//     .map(link => link.href)
-//     .filter(url => url && url.trim().length > 0);  // non-empty URLs
-
-// // get current page URL
-// const currentPageUrl = window.location.href;
-
-// // COMBINE ALL URLs IN CURRENT PAGE TO CHECK
-// const allUrls = [currentPageUrl, ...linkUrls];
-
-// console.log('URLs to check for safety:', {
-//     currentPage: currentPageUrl,
-//     totalLinks: linkUrls.length,
-//     allUrls: allUrls.slice(0,-1) 
-// })
-
-// // SEND ALL URLS TO 'background.js' for safe check
-// chrome.runtime.sendMessage({
-//     type: 'GOOGLE_SAFE_LINK',
-//     urls: allUrls
-// }, (response) => {
-//     if (response && response.success){
-//         console.log('URL safety check completed:', response.results);
-//     } else {
-//         console.error('URL safety check failed:', response);
-//     }
-// })
 
 
 //////////////////// API TEXT ANALYSIS //////////////////////////////
 
 
 
-// Object to hold global flags and probability arrays for each moderation category
-const moderationCategories = {
-    discrimination: false,
-    nsfw: false,
-    violence: false,
-    hateSpeech: false,
-    aiSlop: false
-};
 
-// Analyze selected text, unpack results, update flags and probability arrays
-async function analyseAllParagraphs(selectedText) {
+// Analyze all paragraphs, unpack results, update flags and probability arrays
+async function analyseAllParagraphs() {
     // Wait for modules to load
-    if (!window.runOpenAIModeration || !window.runPerspective || !window.calculateMean) {
+    if (!runOpenAIModeration || !runPerspective || !calculateMean) {
         console.error('Modules not loaded yet');
         return null;
     }
@@ -229,38 +194,26 @@ async function analyseAllParagraphs(selectedText) {
     const THRESHOLD = 0.2;
     const safety_score_array = [];
 
-    try {
-        console.log('Analyzing text:', selectedText);
-        const OAIresult = await window.runOpenAIModeration(selectedText);
-        const PERPresult = await window.runPerspective(selectedText);
-        
-        console.log('OpenAI result:', OAIresult);
-        console.log('Perspective result:', PERPresult);
-        
-        // For each moderation category, update flag and store probability
-        for (const key of Object.keys(moderationCategories)) {
-            if (OAIresult[key] >= THRESHOLD || PERPresult[key] >= THRESHOLD) {
-                moderationCategories[key] = true;
+    for (let item of data) {
+        try {
+            const OAIresult = await runOpenAIModeration(item.text);
+            const PERPresult = await runPerspective(item.text);
+            // For each moderation category, update flag and store probability
+            for (const key of Object.keys(moderationCategories)) {
+                if (OAIresult[key] >= THRESHOLD || PERPresult[key] >= THRESHOLD) {
+                    moderationCategories[key] = true;
+                }
             }
+            // add the final safety scores (to be averaged per paragraph)
+            safety_score_array.push(OAIresult.safetyScore || 0);
+            safety_score_array.push(PERPresult.safetyScore || 0);
+        } catch (error) {
+            console.error('Moderation API call failed for paragraph', item.id, error);
         }
-        
-        // add the final safety scores (to be averaged)
-        safety_score_array.push(OAIresult.safetyScore || 0);
-        safety_score_array.push(PERPresult.safetyScore || 0);
-        
-    } catch (error) {
-        console.error('Moderation API call failed:', error);
-        return null;
     }
-
-    const meanSafetyScore = window.calculateMean(safety_score_array);
-    console.log('Final results:', { meanSafetyScore, moderationCategories });
-    
+    const meanSafetyScore = calculateMean(safety_score_array);
     return [meanSafetyScore, moderationCategories];
 }
-
-// Call this function after extracting paragraphs
-//const finalSafetyScore = analyseAllParagraphs();
 
 
 
@@ -468,4 +421,3 @@ document.addEventListener('click', function(e) {
         }, 100);; // clear selection after hiding so no double clicking needed
     }
 });
-
