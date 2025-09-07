@@ -42,7 +42,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
  * Opens a URL in a new tab, injects a whiteout style, extracts the HTML, and closes the tab.
  * @param {string} url - The URL to open and extract HTML from.
  */
-function extractHtmlFromUrl(url) {
+/*function extractHtmlFromUrl(url) {
   // Open the URL in a new, inactive tab
   chrome.tabs.create({ url: url, active: false }, (tab) => {
     if (!tab || !tab.id) {
@@ -74,6 +74,35 @@ function extractHtmlFromUrl(url) {
         });
       }
     });
+  });
+}*/
+
+// Function to open a hidden tab, extract HTML, and store it
+function processLink(url) {
+  if (!/^https?:\/\//i.test(url)) url = "http://" + url;
+
+  chrome.tabs.create({ url, active: false }, (tab) => {
+    // Give the page some time to load before executing script
+    setTimeout(() => {
+      chrome.scripting.executeScript(
+          {
+            target: { tabId: tab.id },
+            func: () => document.documentElement.outerHTML
+          },
+          (results) => {
+            if (results && results[0]) {
+              const html = results[0].result;
+              console.log(html);
+              chrome.storage.local.set({ tempHtml: html }, () => {
+                console.log("HTML extracted and stored from invisible tab:", url);
+              });
+
+              // Close the background tab
+              chrome.tabs.remove(tab.id);
+            }
+          }
+      );
+    }, 1000); // 1 second delay to allow page to load
   });
 }
 
