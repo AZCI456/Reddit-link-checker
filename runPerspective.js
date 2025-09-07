@@ -1,13 +1,25 @@
-import fetch from "node-fetch";
-import dotenv from "dotenv";
-import { probabilityUnion } from "./util.js";
-dotenv.config();
+// Browser-compatible Perspective API
+console.log('runPerspective.js loaded, defining window.runPerspective');
 
-const PERSPECTIVE_API_KEY = process.env.PERSPECTIVE_API_KEY;
+const PERSPECTIVE_API_KEY= "AIzaSyAwql9YQ20CqaNCUOmjvRWTxTYSYMSm70s";
+
 const PERSPECTIVE_URL = `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${PERSPECTIVE_API_KEY}`;
-const THRESHOLD = 0.2;
 
-export async function runPerspective(text) {
+// Probability union function (copied from util.js)
+function probabilityUnion(probabilities) {
+    if (probabilities.length === 0) return 0;
+    if (probabilities.length === 1) return probabilities[0];
+    
+    // Union probability: 1 - (1-p1)(1-p2)...(1-pn)
+    let product = 1;
+    for (const p of probabilities) {
+        product *= (1 - p);
+    }
+    return 1 - product;
+}
+
+// Make function globally available
+window.runPerspective = async function runPerspective(text) {
     const body = {
         comment: { text },
         languages: ["en"], // en-us
@@ -30,14 +42,16 @@ export async function runPerspective(text) {
         body: JSON.stringify(body),
     });
     const result = await response.json();
+    
+    if (!response.ok) {
+        console.error('Perspective API error:', response.status, response.statusText);
+        console.error('Error response:', result);
+        throw new Error(`Perspective API error: ${response.status} ${response.statusText}`);
+    }
+    
     if (!result || !result.attributeScores) {
-        return {
-            discrimination: 0,
-            nsfw: 0,
-            violence: 0,
-            hateSpeech: 0,
-            aiSlop: 0
-        };
+        console.error('Perspective API response invalid:', result);
+        throw new Error('Invalid Perspective API response structure');
     }
 
     const scores = result.attributeScores;
@@ -91,4 +105,4 @@ export async function runPerspective(text) {
         aiSlop: aiSlop_pr,
         safetyScore: safetyScore_pr
     };
-}
+};

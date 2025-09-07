@@ -1,18 +1,5 @@
-// Dynamic imports: Chrome extensions don't support ES6 import statements !!!
-let runOpenAIModeration, runPerspective, calculateMean;
-
-// Load the modules dynamically
-(async () => {
-    try {
-        const indexModule = await import("./index.js");
-        const utilModule = await import("./util.js");
-        runOpenAIModeration = indexModule.runOpenAIModeration;
-        runPerspective = indexModule.runPerspective;
-        calculateMean = utilModule.calculateMean;
-    } catch (error) {
-        console.error('Failed to load modules:', error);
-    }
-})();
+// Functions are now loaded via manifest.json
+// runOpenAIModeration, runPerspective, and calculateMean should be available globally
 
 
 
@@ -70,34 +57,34 @@ console.log('FOUND PARAGRAPHS:', {
     sampleImageAlts: imageAlts.slice(0, 5) // Show first 5 alt texts
 });
 
-// Extract all LINKS on the page
-const linkUrls = Array.from(document.querySelectorAll('a'))
-    .map(link => link.href)
-    .filter(url => url && url.trim().length > 0);  // non-empty URLs
+// // Extract all LINKS on the page
+// const linkUrls = Array.from(document.querySelectorAll('a'))
+//     .map(link => link.href)
+//     .filter(url => url && url.trim().length > 0);  // non-empty URLs
 
-// get current page URL
-const currentPageUrl = window.location.href;
+// // get current page URL
+// const currentPageUrl = window.location.href;
 
-// COMBINE ALL URLs IN CURRENT PAGE TO CHECK
-const allUrls = [currentPageUrl, ...linkUrls];
+// // COMBINE ALL URLs IN CURRENT PAGE TO CHECK
+// const allUrls = [currentPageUrl, ...linkUrls];
 
-console.log('URLs to check for safety:', {
-    currentPage: currentPageUrl,
-    totalLinks: linkUrls.length,
-    allUrls: allUrls.slice(0,-1) 
-})
+// console.log('URLs to check for safety:', {
+//     currentPage: currentPageUrl,
+//     totalLinks: linkUrls.length,
+//     allUrls: allUrls.slice(0,-1) 
+// })
 
-// SEND ALL URLS TO 'background.js' for safe check
-chrome.runtime.sendMessage({
-    type: 'GOOGLE_SAFE_LINK',
-    urls: allUrls
-}, (response) => {
-    if (response && response.success){
-        console.log('URL safety check completed:', response.results);
-    } else {
-        console.error('URL safety check failed:', response);
-    }
-})
+// // SEND ALL URLS TO 'background.js' for safe check
+// chrome.runtime.sendMessage({
+//     type: 'GOOGLE_SAFE_LINK',
+//     urls: allUrls
+// }, (response) => {
+//     if (response && response.success){
+//         console.log('URL safety check completed:', response.results);
+//     } else {
+//         console.error('URL safety check failed:', response);
+//     }
+// })
 
 
 //////////////////// API TEXT ANALYSIS //////////////////////////////
@@ -116,7 +103,12 @@ const moderationCategories = {
 // Analyze all paragraphs, unpack results, update flags and probability arrays
 async function analyseAllParagraphs() {
     // Wait for modules to load
-    if (!runOpenAIModeration || !runPerspective || !calculateMean) {
+    console.log('Checking function availability:');
+    console.log('window.runOpenAIModeration:', typeof window.runOpenAIModeration);
+    console.log('window.runPerspective:', typeof window.runPerspective);
+    console.log('window.calculateMean:', typeof window.calculateMean);
+    
+    if (!window.runOpenAIModeration || !window.runPerspective || !window.calculateMean) {
         console.error('Modules not loaded yet');
         return null;
     }
@@ -135,9 +127,8 @@ async function analyseAllParagraphs() {
 
     for (let item of data) {
         try {
-            const OAIresult = await runOpenAIModeration(item.text);
-            const PERPresult = await runPerspective(item.text)
-            //item.results = OAIresult;
+            const OAIresult = await window.runOpenAIModeration(item.text);
+            const PERPresult = await window.runPerspective(item.text)
             // For each moderation category, update flag and store probability
             for (const key of Object.keys(moderationCategories)) {
                 if (OAIresult[key] >= THRESHOLD || PERPresult[key] >= THRESHOLD) {
@@ -152,7 +143,11 @@ async function analyseAllParagraphs() {
             item.results = null;
         }
     }
+<<<<<<< HEAD
     return calculateMean(safety_score_array), moderationCategories;
+=======
+    return window.calculateMean(safety_score_array), moderationCategories; // int, object -> needs destructuring
+>>>>>>> ba008b9 (got all api functions working, remove node.js implementation, moved all API keys into scripts and out of dotenv)
 }
 
 // Call this function after extracting paragraphs
@@ -212,6 +207,86 @@ function showPopup(text, x, y) {
     popup.style.zIndex = '9999';
     
     document.body.appendChild(popup);
+<<<<<<< HEAD
+=======
+    
+    // Run analysis directly
+    console.log('Running analysis for text:', text);
+    analyseAllParagraphs().then((result) => {
+        if (result) {
+            const [meanSafetyScore, moderationCategories] = result;
+            console.log('Analysis complete! Mean score:', meanSafetyScore);
+            console.log('Moderation categories:', moderationCategories);
+            
+            // Update the popup UI with results
+            updatePopupWithResults(meanSafetyScore, moderationCategories);
+        } else {
+            console.log('Analysis returned null (modules not loaded)');
+        }
+    }).catch((error) => {
+        console.error('Analysis failed:', error);
+    });
+}
+
+// Function to update popup UI based on analysis results
+function updatePopupWithResults(meanSafetyScore, moderationCategories) {
+    const popup = document.getElementById('safety_popup');
+    if (!popup) return;
+    
+    console.log('Updating popup with results:', { meanSafetyScore, moderationCategories });
+    
+    // Calculate phase (1-5) based on safety score
+    let phase;
+    if (meanSafetyScore <= 0.2) phase = 1;
+    else if (meanSafetyScore <= 0.4) phase = 2;
+    else if (meanSafetyScore <= 0.6) phase = 3;
+    else if (meanSafetyScore <= 0.8) phase = 4;
+    else phase = 5;
+    
+    // Determine colors and image based on phase
+    let backgroundColor, imageFile;
+    if (phase <= 2) {
+        // Phase 1-2: Green (safe)
+        backgroundColor = '#12D188';
+        imageFile = 'phase_1.png';
+    } else if (phase === 3) {
+        // Phase 3: Yellow (warning)
+        backgroundColor = '#FFD700';
+        imageFile = 'phase_2.png';
+    } else {
+        // Phase 4-5: Red (danger)
+        backgroundColor = '#FF4444';
+        imageFile = 'phase_3.png';
+    }
+    
+    // Update the main popup background
+    const mainContainer = popup.querySelector('div');
+    if (mainContainer) {
+        mainContainer.style.background = backgroundColor;
+    }
+    
+    // Update the Mr. Incredible image
+    const mrIncredibleImg = popup.querySelector('img[src*="mr_incredible_lol"]');
+    if (mrIncredibleImg) {
+        mrIncredibleImg.src = chrome.runtime.getURL(`png_files/mr_incredible_lol/${imageFile}`);
+    }
+    
+    // Replace loading GIFs with actual results
+    const analysisDivs = popup.querySelectorAll('div[style*="background: rgba(0,0,0,0.4)"]');
+    const categories = ['discrimination', 'nsfw', 'violence', 'hateSpeech'];
+    
+    analysisDivs.forEach((div, index) => {
+        if (index < categories.length) {
+            const category = categories[index];
+            const isFlagged = moderationCategories[category];
+            
+            // Replace the loading GIF with the result
+            div.innerHTML = `<span style="color: white; font-size: 10px;">${isFlagged ? 'HIGH' : 'LOW'}</span>`;
+        }
+    });
+    
+    console.log('Popup updated! Phase:', phase, 'Background:', backgroundColor, 'Image:', imageFile);
+>>>>>>> ba008b9 (got all api functions working, remove node.js implementation, moved all API keys into scripts and out of dotenv)
 }
 
 
