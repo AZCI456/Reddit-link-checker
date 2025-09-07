@@ -67,20 +67,39 @@ function showPopup(text, x, y) {
     document.body.appendChild(popup);
 }
 
+//Creating a function to check whether or not the selection is a url
+function isValidURL(text) {
+    try {
+        new URL(text);
+        return true;
+    } catch (_) {
+        return false;
+    }
+}
+
 
 
 // add event listenter to wait for text to be highlighted
 document.addEventListener('mouseup', function(e) {
     // If the event target is inside the popup, do nothing
+
     if (e.target.closest('#safety_popup')) {
         return;
     }
     let selectedText = window.getSelection().toString();
-    if (selectedText.length > 0) {
+
+    if (selectedText.length > 0 && isValidURL(selectedText)) {
         // show popup.  A tiny delay ensures the selection sticks
         setTimeout(() => showPopup(selectedText, e.pageX, e.pageY), 10);
+        chrome.runtime.sendMessage({ action: "setURL", url: selectedText });
     }
 });
+
+
+// Later, you can retrieve it
+//chrome.runtime.sendMessage({ action: "getURL" }, (response) => {
+    //console.log("Global URL:", response.url);
+//});
 
 // Hide popup when clicking outside it, and clear selection
 document.addEventListener('click', function(e) {
