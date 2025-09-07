@@ -145,19 +145,15 @@ async function analyseAllParagraphs() {
                 }
             }
             // add the final safety scores (to be averaged per paragraph)
-            safety_score_array.push(OAIresult[safetyScore])
-            safety_score_array.push(PERPresult[safetyScore])
+            safety_score_array.push(OAIresult.safetyScore || 0)
+            safety_score_array.push(PERPresult.safetyScore || 0)
         } catch (error) {
             console.error('Moderation API call failed for paragraph', item.id, error);
             item.results = null;
         }
     }
-    return calculateMean(safety_score_array), moderationCategories;
+    return calculateMean(safety_score_array), moderationCategories; // objects -> needs destructuring
 }
-
-// Call this function after extracting paragraphs
-//const finalSafetyScore = analyseAllParagraphs();
-
 
 
 //////////////////// FRONT END FUNCITONALITY //////////////////////////////
@@ -169,7 +165,7 @@ function showPopup(text, x, y) {
     if (existingPopup){
         existingPopup.remove();
     }
-    
+    // DYNAMICALLY CREATE POPUP ELEMENT (CAN'T DO SEPERATE HTML FILES)
     let popup = document.createElement('div');
     popup.id = 'safety_popup';
     popup.innerHTML = `
@@ -212,9 +208,59 @@ function showPopup(text, x, y) {
     popup.style.zIndex = '9999';
     
     document.body.appendChild(popup);
+    
+    // // Test the analysis function
+    // console.log('Running analysis for text:', text);
+    // updatePopup().then((phaseResult) => {
+    //     console.log('Analysis complete! Phase:', phaseResult);
+        
+    //     // Update the popup with results
+    //     updatePopupUI(phaseResult);
+    // }).catch((error) => {
+    //     console.error('Analysis failed:', error);
+    // });
 }
 
-
+// // Function to update popup UI based on analysis results
+// function updatePopupUI(phaseResult) {
+//     const popup = document.getElementById('safety_popup');
+//     if (!popup) return;
+    
+//     console.log('Updating popup UI for phase:', phaseResult);
+    
+//     // Determine colors and image based on phase
+//     let backgroundColor, imageFile;
+    
+//     if (phaseResult <= 2) {
+//         // Phase 1-2: Green (safe)
+//         backgroundColor = '#12D188';
+//         imageFile = 'phase_1.png';
+//     } else if (phaseResult === 3) {
+//         // Phase 3: Yellow (warning)
+//         backgroundColor = '#FFD700';
+//         imageFile = 'phase_2.png';
+//     } else {
+//         // Phase 4-5: Red (danger)
+//         backgroundColor = '#FF4444';
+//         imageFile = 'phase_3.png';
+//     }
+    
+//     // Update the main popup background
+//     const mainContainer = popup.querySelector('div');
+//     if (mainContainer) {
+//         mainContainer.style.background = backgroundColor;
+//     }
+    
+//     // Update the Mr. Incredible image
+//     const mrIncredibleImg = popup.querySelector('img[src*="mr_incredible_lol"]');
+//     if (mrIncredibleImg) {
+//         mrIncredibleImg.src = chrome.runtime.getURL(`png_files/mr_incredible_lol/${imageFile}`);
+//     }
+    
+//     // TODO: Replace loading GIFs with actual results
+//     // You'll need to get the moderationCategories from somewhere
+//     console.log('Popup UI updated!');
+// }
 
 // add event listenter to wait for text to be highlighted
 document.addEventListener('mouseup', function(e) {
@@ -229,6 +275,21 @@ document.addEventListener('mouseup', function(e) {
     }
 });
 
+
+const phase = 0; // global variable to change the UI color, image, and text
+async function updatePopup(){
+    const { meanSafetyScore, moderationCategories } = await analyseAllParagraphs();
+    console.log('Mean Safety Score:', meanSafetyScore);
+    console.log('Moderation Categories:', moderationCategories);
+
+    phase = Math.floor(meanSafetyScore / 0.2) ;
+   
+    console.log('Phase:', phase);
+    return phase;
+}
+
+
+
 // Hide popup when clicking outside it, and clear selection
 document.addEventListener('click', function(e) {
     const popup = document.getElementById('safety_popup');
@@ -239,9 +300,8 @@ document.addEventListener('click', function(e) {
     if (popup) {
         popup.remove();
         // Delay clearing selection so popup logic runs first
-        // Delay clearing selection to avoid conflicts
         setTimeout(() => {
-            window.getSelection().removeAllRanges();
-        }, 100);; // clear selection after hiding so no double clicking needed
+            window.getSelection().removeAllRanges();   // clear selection after hiding so no double clicking needed
+        }, 100);;
     }
 });

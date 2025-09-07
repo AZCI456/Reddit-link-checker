@@ -1,4 +1,4 @@
-import { runOpenAIModeration, runPerspective, runGSafeBrowsing } from './index.js';
+import { runOpenAIModeration, runPerspective } from './index.js';
 
 async function analyzeText(text){
   
