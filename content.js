@@ -86,7 +86,7 @@ document.addEventListener('mouseup', function(e) {
     if (e.target.closest('#safety_popup')) {
         return;
     }
-    let selectedText = window.getSelection().toString();
+    let selectedText = window.getSelection().toString().trim();
 
     if (selectedText.length > 0 && isValidURL(selectedText)) {
         // show popup.  A tiny delay ensures the selection sticks
