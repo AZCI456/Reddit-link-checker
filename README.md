@@ -1,5 +1,5 @@
-# Reddit-link-checker (first reddit then desided to implement for every website coz why not - this was not a good idea lol)
-val aaron and ersh  (Sera submission) - catalyst 2025
+# SafeLink 
+- Created for Catalyst 2025
 
 A browser-based tool for evaluating the safety and originality of content behind URLs, designed and built during a 48-hour hackathon by first-year students.
 
